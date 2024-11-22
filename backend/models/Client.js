@@ -55,7 +55,16 @@ module.exports = (sequelize, DataTypes) => {
                 model: 'Users',
                 key: 'id'
             }
+        },
+        updatedBy: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            references: {
+                model: 'Users',
+                key: 'id'
+            }
         }
+
     }, {
         timestamps: true
     });

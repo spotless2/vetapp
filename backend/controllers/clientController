@@ -36,4 +36,36 @@ const getClientsByCabinetId = async (req, res) => {
     }
 };
 
-module.exports = { createClient, getClientsByCabinetId };
+const updateClient = async (req, res) => {
+    const { id } = req.params;
+    const { firstName, lastName, email, phone, personalId, idCardNumber, address, birthDate, notes, cabinetId, updatedBy } = req.body;
+
+    try {
+        const client = await Client.findByPk(id);
+
+        if (!client) {
+            return res.status(404).json({ message: 'Client not found' });
+        }
+
+        client.firstName = firstName || client.firstName;
+        client.lastName = lastName || client.lastName;
+        client.email = email || client.email;
+        client.phone = phone || client.phone;
+        client.personalId = personalId || client.personalId;
+        client.idCardNumber = idCardNumber || client.idCardNumber;
+        client.address = address || client.address;
+        client.birthDate = birthDate || client.birthDate;
+        client.notes = notes || client.notes;
+        client.cabinetId = cabinetId || client.cabinetId;
+        client.createdBy = client.createdBy;
+        client.updatedBy = updatedBy || client.updatedBy;
+
+        await client.save();
+
+        res.status(200).json(client);
+    } catch (err) {
+        res.status(500).json({ message: 'Server error', error: err.message });
+    }
+};
+
+module.exports = { createClient, getClientsByCabinetId, updateClient };

@@ -10,7 +10,7 @@ class RegisterPage extends StatefulWidget {
   _RegisterPageState createState() => _RegisterPageState();
 }
 
-class _RegisterPageState extends State<RegisterPage> {
+class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderStateMixin {
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
@@ -21,11 +21,23 @@ class _RegisterPageState extends State<RegisterPage> {
   List<dynamic> cabinets = [];
   String? selectedCabinetId;
   File? _image;
+  late AnimationController _controller;
+  late Animation<double> _animation;
+  bool _isHovered = false;
 
   @override
   void initState() {
     super.initState();
     fetchCabinets();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 1000),
+      vsync: this,
+    );
+    _animation = CurvedAnimation(
+      parent: _controller,
+      curve: Curves.easeInOut,
+    );
+    _controller.forward();
   }
 
   Future<void> fetchCabinets() async {
@@ -88,70 +100,117 @@ class _RegisterPageState extends State<RegisterPage> {
     }
   }
 
-  @override
+   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Register'),
-      ),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
+      body: Container(
+        width: double.infinity,
+        height: double.infinity,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.teal.shade100, Colors.teal.shade400],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: SafeArea(
           child: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Text(
-                  'Create an Account',
-                  style: TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.blueAccent,
+            padding: const EdgeInsets.all(24.0),
+            child: FadeTransition(
+              opacity: _animation,
+              child: Column(
+                children: [
+                  Icon(
+                    Icons.pets,
+                    size: 80,
+                    color: Colors.teal.shade700,
                   ),
-                ),
-                SizedBox(height: 20),
-                _buildTextField(usernameController, 'Username'),
-                SizedBox(height: 10),
-                _buildTextField(passwordController, 'Password', obscureText: true),
-                SizedBox(height: 10),
-                _buildTextField(emailController, 'Email'),
-                SizedBox(height: 10),
-                _buildTextField(firstNameController, 'First Name'),
-                SizedBox(height: 10),
-                _buildTextField(middleNameController, 'Middle Name (Optional)'),
-                SizedBox(height: 10),
-                _buildTextField(lastNameController, 'Last Name'),
-                SizedBox(height: 10),
-                _buildDropdownField(),
-                SizedBox(height: 10),
-                _buildPhotoField(),
-                SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: register,
-                  style: ElevatedButton.styleFrom(
-                    padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
-                    backgroundColor: Colors.blueAccent,
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
+                  SizedBox(height: 20),
+                  Text(
+                    'Creare Cont',
+                    style: TextStyle(
+                      fontSize: 40,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.teal.shade800,
                     ),
                   ),
-                  child: Text('Register', style: TextStyle(fontSize: 18)),
-                ),
-                SizedBox(height: 10),
-                TextButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => LoginPage()),
-                    );
-                  },
-                  child: Text(
-                    'Already have an account? Login',
-                    style: TextStyle(color: Colors.blueAccent),
+                  SizedBox(height: 10),
+                  Text(
+                    'Înregistrează-te pentru a începe',
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: Colors.teal.shade700,
+                    ),
                   ),
-                ),
-              ],
+                  SizedBox(height: 40),
+                  _buildTextField(usernameController, 'Nume Utilizator'),
+                  SizedBox(height: 16),
+                  _buildTextField(passwordController, 'Parolă', obscureText: true),
+                  SizedBox(height: 16),
+                  _buildTextField(emailController, 'Email'),
+                  SizedBox(height: 16),
+                  _buildTextField(firstNameController, 'Prenume'),
+                  SizedBox(height: 16),
+                  _buildTextField(middleNameController, 'Al Doilea Prenume (Opțional)'),
+                  SizedBox(height: 16),
+                  _buildTextField(lastNameController, 'Nume'),
+                  SizedBox(height: 16),
+                  _buildDropdownField(),
+                  SizedBox(height: 16),
+                  _buildPhotoField(),
+                  SizedBox(height: 40),
+                  MouseRegion(
+                    onEnter: (_) => setState(() => _isHovered = true),
+                    onExit: (_) => setState(() => _isHovered = false),
+                    child: AnimatedContainer(
+                      duration: Duration(milliseconds: 200),
+                      child: ElevatedButton(
+                        onPressed: register,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: _isHovered 
+                              ? Colors.white 
+                              : Colors.teal.shade600,
+                          padding: EdgeInsets.symmetric(
+                            horizontal: _isHovered ? 60 : 50,
+                            vertical: 15
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                          elevation: _isHovered ? 8 : 4,
+                        ),
+                        child: Text(
+                          'Înregistrare',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: _isHovered 
+                                ? Colors.teal.shade600 
+                                : Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => LoginPage()),
+                      );
+                    },
+                    child: Text(
+                      'Ai deja cont? Autentifică-te',
+                      style: TextStyle(
+                        color: Colors.teal.shade800,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -164,13 +223,24 @@ class _RegisterPageState extends State<RegisterPage> {
       controller: controller,
       decoration: InputDecoration(
         labelText: labelText,
+        labelStyle: TextStyle(color: Colors.teal.shade700),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: Colors.teal.shade200),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: Colors.teal.shade200),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: Colors.teal.shade400, width: 2),
         ),
         filled: true,
-        fillColor: Colors.grey[200],
+        fillColor: Colors.white,
       ),
       obscureText: obscureText,
+      style: TextStyle(fontSize: 16),
     );
   }
 
@@ -190,11 +260,21 @@ class _RegisterPageState extends State<RegisterPage> {
       }).toList(),
       decoration: InputDecoration(
         labelText: 'Cabinet',
+        labelStyle: TextStyle(color: Colors.teal.shade700),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: Colors.teal.shade200),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: Colors.teal.shade200),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: Colors.teal.shade400, width: 2),
         ),
         filled: true,
-        fillColor: Colors.grey[200],
+        fillColor: Colors.white,
       ),
     );
   }
@@ -204,10 +284,10 @@ class _RegisterPageState extends State<RegisterPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Photo',
+          'Fotografie',
           style: TextStyle(
             fontSize: 16,
-            color: Colors.grey[700],
+            color: Colors.teal.shade700,
           ),
         ),
         SizedBox(height: 8),
@@ -215,21 +295,28 @@ class _RegisterPageState extends State<RegisterPage> {
           width: double.infinity,
           child: OutlinedButton.icon(
             onPressed: _pickImage,
-            icon: Icon(Icons.photo_camera),
-            label: Text(_image == null ? 'Upload Photo' : 'Change Photo'),
+            icon: Icon(Icons.photo_camera, color: Colors.teal.shade600),
+            label: Text(
+              _image == null ? 'Încarcă Fotografie' : 'Schimbă Fotografie',
+              style: TextStyle(color: Colors.teal.shade600),
+            ),
             style: OutlinedButton.styleFrom(
               padding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
-              side: BorderSide(color: Colors.grey[400]!),
+              side: BorderSide(color: Colors.teal.shade400),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(12),
               ),
+              backgroundColor: Colors.white,
             ),
           ),
         ),
         if (_image != null)
           Padding(
             padding: const EdgeInsets.only(top: 10),
-            child: Image.file(_image!, height: 100, width: 100),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: Image.file(_image!, height: 100, width: 100, fit: BoxFit.cover),
+            ),
           ),
       ],
     );

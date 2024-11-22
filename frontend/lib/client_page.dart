@@ -12,69 +12,157 @@ class ClientPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Clienti'),
+        title: Text(
+          'Gestionare Clienți',
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+        centerTitle: true,
+        elevation: 0,
+        backgroundColor: Colors.teal,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            _buildCard(
-              context,
-              'Client Nou',
-              'Inregistrare client nou',
-              Icons.person_add,
-              () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => NewClientScreen(user: user)),
-                );
-              },
-            ),
-            SizedBox(height: 20),
-            _buildCard(
-              context,
-              'Client Existent',
-              'Cautare client existent',
-              Icons.search,
-              () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => ExistingClientScreen(user: user)),
-                );
-              },
-            ),
-          ],
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.teal.shade50, Colors.teal.shade100],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            children: [
+              _buildClientCard(
+                context,
+                'Client Nou',
+                'Înregistrare client nou în sistem',
+                Icons.person_add,
+                Colors.teal.shade400,
+                () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => NewClientScreen(user: user),
+                    ),
+                  );
+                },
+              ),
+              SizedBox(height: 20),
+              _buildClientCard(
+                context,
+                'Client Existent',
+                'Căutare și gestionare clienți existenți',
+                Icons.search,
+                Colors.blue.shade400,
+                () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ExistingClientScreen(user: user),
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildCard(BuildContext context, String title, String subtitle,
-      IconData icon, VoidCallback onTap) {
-    return Card(
-      elevation: 4,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      child: ListTile(
-        leading: Icon(icon, size: 40, color: Colors.blueAccent),
-        title: Text(title,
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-        subtitle: Text(subtitle),
-        trailing: Icon(Icons.arrow_forward, color: Colors.blueAccent),
-        onTap: onTap,
+  Widget _buildClientCard(BuildContext context, String title, String subtitle,
+      IconData icon, Color color, VoidCallback onTap) {
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      child: AnimatedContainer(
+        duration: Duration(milliseconds: 200),
+        curve: Curves.easeInOut,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(15),
+          boxShadow: [
+            BoxShadow(
+              color: color.withOpacity(0.3),
+              blurRadius: 15,
+              offset: Offset(0, 5),
+            ),
+          ],
+        ),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            borderRadius: BorderRadius.circular(15),
+            onTap: onTap,
+            child: Padding(
+              padding: EdgeInsets.all(20),
+              child: Row(
+                children: [
+                  Container(
+                    padding: EdgeInsets.all(15),
+                    decoration: BoxDecoration(
+                      color: color.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Icon(
+                      icon,
+                      size: 30,
+                      color: color,
+                    ),
+                  ),
+                  SizedBox(width: 20),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          title,
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black87,
+                          ),
+                        ),
+                        SizedBox(height: 5),
+                        Text(
+                          subtitle,
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.black54,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Icon(
+                    Icons.arrow_forward_ios,
+                    color: color,
+                    size: 20,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }
 }
 
-class NewClientScreen extends StatelessWidget {
+class NewClientScreen extends StatefulWidget {
   final Map<String, dynamic> user;
-  final _formKey = GlobalKey<FormState>();
-
   NewClientScreen({required this.user});
 
-  // Define TextEditingController for each field
+  @override
+  _NewClientScreenState createState() => _NewClientScreenState();
+}
+
+class _NewClientScreenState extends State<NewClientScreen> {
+  final _formKey = GlobalKey<FormState>();
+
   final TextEditingController _firstNameController = TextEditingController();
   final TextEditingController _lastNameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
@@ -85,115 +173,178 @@ class NewClientScreen extends StatelessWidget {
   final TextEditingController _birthDateController = TextEditingController();
   final TextEditingController _notesController = TextEditingController();
 
+  String? _selectedCountryCode = '+40';
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Informatii Client'),
+        title: Text(
+          'Înregistrare Client Nou',
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        backgroundColor: Colors.teal,
+        elevation: 0,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: ListView(
-            children: [
-              _buildTextField('Prenume și Nume', Icons.person,
-                  controller: _firstNameController),
-              _buildTextField('Nume', Icons.person_outline,
-                  controller: _lastNameController),
-              _buildTextField('Email', Icons.email,
-                  controller: _emailController),
-              _buildPhoneField(),
-              _buildTextField(
-                  'Cod Numeric Personal (Optional)', Icons.credit_card,
-                  isOptional: true, controller: _personalIdController),
-              _buildTextField(
-                  'Seria și Numărul Buletinului (Optional)', Icons.badge,
-                  isOptional: true, controller: _identityCardController),
-              _buildTextField('Adresă (Optional)', Icons.home,
-                  isOptional: true, controller: _addressController),
-              _buildDateField(
-                  context, 'Data Nașterii (Optional)', Icons.calendar_today,
-                  isOptional: true, controller: _birthDateController),
-              _buildTextField('Note (Optional)', Icons.note,
-                  maxLines: 3, isOptional: true, controller: _notesController),
-              SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () async {
-                  if (_formKey.currentState!.validate()) {
-                    final client = await _saveClient();
-                    if (client != null) {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              ClientProfileScreen(client: client, user: user),
-                        ),
-                      );
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.teal.shade50, Colors.teal.shade100],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: SingleChildScrollView(
+          padding: EdgeInsets.all(16.0),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                _buildSection(
+                  'Informații Personale',
+                  Icons.person,
+                  [
+                    _buildTextField('Prenume', Icons.person_outline,
+                        controller: _firstNameController),
+                    _buildTextField('Nume', Icons.person_outline,
+                        controller: _lastNameController),
+                    _buildPhoneField(),
+                    _buildTextField('Email', Icons.email,
+                        controller: _emailController),
+                  ],
+                ),
+                SizedBox(height: 16),
+                _buildSection(
+                  'Documente',
+                  Icons.document_scanner,
+                  [
+                    _buildTextField('CNP', Icons.credit_card,
+                        isOptional: true, controller: _personalIdController),
+                    _buildTextField('Serie/Număr CI', Icons.badge,
+                        isOptional: true, controller: _identityCardController),
+                  ],
+                ),
+                SizedBox(height: 16),
+                _buildSection(
+                  'Detalii Adiționale',
+                  Icons.more_horiz,
+                  [
+                    _buildTextField('Adresă', Icons.home,
+                        isOptional: true, controller: _addressController),
+                    _buildDateField(
+                        context, 'Data Nașterii', Icons.calendar_today,
+                        isOptional: true, controller: _birthDateController),
+                    _buildTextField('Note', Icons.note,
+                        maxLines: 3,
+                        isOptional: true,
+                        controller: _notesController),
+                  ],
+                ),
+                SizedBox(height: 24),
+                ElevatedButton(
+                  onPressed: () async {
+                    if (_formKey.currentState!.validate()) {
+                      final client = await _saveClient();
+                      if (client != null) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ClientProfileScreen(
+                                client: client, user: widget.user),
+                          ),
+                        );
+                      }
                     }
-                  }
-                },
-                child: Text('Inregistrare Client'),
-              ),
-            ],
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.teal.shade400,
+                    padding: EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: Text(
+                    'Înregistrare Client',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 
-  Future<Map<String, dynamic>?> _saveClient() async {
-    final Map<String, String> clientData = {
-      'firstName': _firstNameController.text,
-      'lastName': _lastNameController.text,
-      'email': _emailController.text,
-      'phone': _phoneController.text,
-      'personalId': _personalIdController.text,
-      'identityCard': _identityCardController.text,
-      'address': _addressController.text,
-      'notes': _notesController.text,
-      'createdBy': user['id'].toString(), // Use user ID for createdBy
-      'cabinetId': user['cabinetId'].toString(), // Use cabinet ID from user
-    };
-
-    if (_birthDateController.text.isNotEmpty &&
-        _birthDateController.text != 'Invalid date') {
-      clientData['birthDate'] = _birthDateController.text;
-    }
-
-    final response = await http.post(
-      Uri.parse('http://localhost:3000/clients'),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      body: jsonEncode(clientData),
+  Widget _buildSection(String title, IconData icon, List<Widget> children) {
+    return Card(
+      elevation: 4,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Padding(
+        padding: EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(icon, color: Colors.teal.shade700),
+                SizedBox(width: 8),
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.teal.shade700,
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 16),
+            ...children,
+          ],
+        ),
+      ),
     );
-
-    if (response.statusCode == 201) {
-      return jsonDecode(response.body);
-    } else {
-      // Handle error
-      ScaffoldMessenger.of(_formKey.currentContext!).showSnackBar(
-        SnackBar(content: Text('Failed to save client')),
-      );
-      return null;
-    }
   }
 
-  Widget _buildTextField(String labelText, IconData icon,
-      {int maxLines = 1,
-      bool isOptional = false,
-      TextEditingController? controller}) {
+  Widget _buildTextField(
+    String labelText,
+    IconData icon, {
+    int maxLines = 1,
+    bool isOptional = false,
+    TextEditingController? controller,
+  }) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      padding: const EdgeInsets.only(bottom: 16),
       child: TextFormField(
         controller: controller,
-        decoration: InputDecoration(
-          labelText: labelText,
-          prefixIcon: Icon(icon),
-          border: OutlineInputBorder(),
-        ),
         maxLines: maxLines,
+        decoration: InputDecoration(
+          labelText: labelText + (isOptional ? ' (Opțional)' : ''),
+          prefixIcon: Icon(icon, color: Colors.teal.shade600),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+            borderSide: BorderSide(color: Colors.teal.shade200),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+            borderSide: BorderSide(color: Colors.teal.shade400, width: 2),
+          ),
+          filled: true,
+          fillColor: Colors.white,
+        ),
         validator: (value) {
           if (!isOptional && (value == null || value.isEmpty)) {
             return 'Vă rugăm să introduceți $labelText';
@@ -206,39 +357,67 @@ class NewClientScreen extends StatelessWidget {
 
   Widget _buildPhoneField() {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      padding: const EdgeInsets.only(bottom: 16),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(
-            flex: 2,
+          SizedBox(
+            width: 120,
             child: DropdownButtonFormField<String>(
+              value: _selectedCountryCode,
               decoration: InputDecoration(
-                labelText: 'Prefix Țară',
-                prefixIcon: Icon(Icons.phone),
-                border: OutlineInputBorder(),
+                labelText: 'Prefix',
+                prefixIcon: Icon(Icons.phone, color: Colors.teal.shade600),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide(color: Colors.teal.shade200),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide(color: Colors.teal.shade400, width: 2),
+                ),
+                filled: true,
+                fillColor: Colors.white,
               ),
-              items: ['+1', '+40', '+44', '+91'].map((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
+              items: ['+40', '+44', '+1', '+33'].map((code) {
+                return DropdownMenuItem(
+                  value: code,
+                  child: Text(code),
                 );
               }).toList(),
-              onChanged: (newValue) {},
+              onChanged: (value) {
+                setState(() {
+                  _selectedCountryCode = value;
+                });
+              },
             ),
           ),
-          SizedBox(width: 10),
+          SizedBox(width: 12),
           Expanded(
-            flex: 5,
             child: TextFormField(
               controller: _phoneController,
               decoration: InputDecoration(
                 labelText: 'Număr Telefon',
-                border: OutlineInputBorder(),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide(color: Colors.teal.shade200),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide(color: Colors.teal.shade400, width: 2),
+                ),
+                filled: true,
+                fillColor: Colors.white,
               ),
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'Vă rugăm să introduceți Număr Telefon';
+                  return 'Vă rugăm să introduceți numărul de telefon';
                 }
                 return null;
               },
@@ -249,37 +428,108 @@ class NewClientScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildDateField(BuildContext context, String labelText, IconData icon,
-      {bool isOptional = false, TextEditingController? controller}) {
+  Widget _buildDateField(
+    BuildContext context,
+    String labelText,
+    IconData icon, {
+    bool isOptional = false,
+    TextEditingController? controller,
+  }) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      padding: const EdgeInsets.only(bottom: 16),
       child: TextFormField(
         controller: controller,
-        decoration: InputDecoration(
-          labelText: labelText,
-          prefixIcon: Icon(icon),
-          border: OutlineInputBorder(),
-        ),
         readOnly: true,
+        decoration: InputDecoration(
+          labelText: labelText + (isOptional ? ' (Opțional)' : ''),
+          prefixIcon: Icon(icon, color: Colors.teal.shade600),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+            borderSide: BorderSide(color: Colors.teal.shade200),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+            borderSide: BorderSide(color: Colors.teal.shade400, width: 2),
+          ),
+          filled: true,
+          fillColor: Colors.white,
+        ),
         onTap: () async {
           DateTime? pickedDate = await showDatePicker(
             context: context,
             initialDate: DateTime.now(),
             firstDate: DateTime(1900),
             lastDate: DateTime.now(),
+            builder: (context, child) {
+              return Theme(
+                data: Theme.of(context).copyWith(
+                  colorScheme: ColorScheme.light(
+                    primary: Colors.teal.shade400,
+                    onPrimary: Colors.white,
+                    surface: Colors.white,
+                    onSurface: Colors.black,
+                  ),
+                ),
+                child: child!,
+              );
+            },
           );
           if (pickedDate != null) {
             controller?.text = DateFormat('yyyy-MM-dd').format(pickedDate);
           }
         },
-        validator: (value) {
-          if (!isOptional && (value == null || value.isEmpty)) {
-            return 'Vă rugăm să introduceți $labelText';
-          }
-          return null;
-        },
       ),
     );
+  }
+
+  Future<Map<String, dynamic>?> _saveClient() async {
+    final Map<String, String> clientData = {
+      'firstName': _firstNameController.text,
+      'lastName': _lastNameController.text,
+      'email': _emailController.text,
+      'phone': '$_selectedCountryCode${_phoneController.text}',
+      'personalId': _personalIdController.text,
+      'identityCard': _identityCardController.text,
+      'address': _addressController.text,
+      'notes': _notesController.text,
+      'createdBy': widget.user['id'].toString(),
+      'cabinetId': widget.user['cabinetId'].toString(),
+    };
+
+    if (_birthDateController.text.isNotEmpty) {
+      clientData['birthDate'] = _birthDateController.text;
+    }
+
+    try {
+      final response = await http.post(
+        Uri.parse('http://localhost:3000/clients'),
+        headers: {'Content-Type': 'application/json; charset=UTF-8'},
+        body: jsonEncode(clientData),
+      );
+
+      if (response.statusCode == 201) {
+        return jsonDecode(response.body);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Eroare la salvarea clientului'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return null;
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Eroare de conexiune'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return null;
+    }
   }
 }
 
@@ -295,6 +545,7 @@ class ExistingClientScreen extends StatefulWidget {
 class _ExistingClientScreenState extends State<ExistingClientScreen> {
   List<dynamic> clients = [];
   List<dynamic> filteredClients = [];
+  bool isLoading = true;
 
   @override
   void initState() {
@@ -303,20 +554,36 @@ class _ExistingClientScreenState extends State<ExistingClientScreen> {
   }
 
   Future<void> _fetchClients() async {
+    setState(() => isLoading = true);
     final cabinetId = widget.user['cabinetId'];
-    final response =
-        await http.get(Uri.parse('http://localhost:3000/clients/$cabinetId'));
 
-    if (response.statusCode == 200) {
-      setState(() {
-        clients = jsonDecode(response.body);
-        filteredClients = clients;
-      });
-    } else {
-      // Handle error
+    try {
+      final response =
+          await http.get(Uri.parse('http://localhost:3000/clients/$cabinetId'));
+
+      if (response.statusCode == 200) {
+        setState(() {
+          clients = jsonDecode(response.body);
+          filteredClients = clients;
+          isLoading = false;
+        });
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Nu s-au putut încărca clienții'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        setState(() => isLoading = false);
+      }
+    } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to load clients')),
+        SnackBar(
+          content: Text('Eroare de conexiune'),
+          backgroundColor: Colors.red,
+        ),
       );
+      setState(() => isLoading = false);
     }
   }
 
@@ -333,44 +600,125 @@ class _ExistingClientScreenState extends State<ExistingClientScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Căutare Client'),
+        title: Text(
+          'Căutare Client',
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        backgroundColor: Colors.teal,
+        elevation: 0,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            TextField(
-              decoration: InputDecoration(
-                labelText: 'Căutare după Nume',
-                prefixIcon: Icon(Icons.search),
-                border: OutlineInputBorder(),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.teal.shade50, Colors.teal.shade100],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              Card(
+                elevation: 4,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: TextField(
+                    decoration: InputDecoration(
+                      labelText: 'Căutare după Nume',
+                      labelStyle: TextStyle(color: Colors.teal.shade600),
+                      prefixIcon:
+                          Icon(Icons.search, color: Colors.teal.shade600),
+                      border: InputBorder.none,
+                      hintText: 'Introduceți numele clientului...',
+                    ),
+                    onChanged: _filterClients,
+                  ),
+                ),
               ),
-              onChanged: (value) {
-                _filterClients(value);
-              },
-            ),
-            SizedBox(height: 10),
-            Expanded(
-              child: ListView.builder(
-                itemCount: filteredClients.length,
-                itemBuilder: (context, index) {
-                  final client = filteredClients[index];
-                  return ListTile(
-                    leading: Icon(Icons.person),
-                    title: Text('${client['firstName']} ${client['lastName']}'),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => ClientProfileScreen(
-                                client: client, user: widget.user)),
-                      );
-                    },
-                  );
-                },
+              SizedBox(height: 16),
+              Expanded(
+                child: isLoading
+                    ? Center(child: CircularProgressIndicator())
+                    : filteredClients.isEmpty
+                        ? Center(
+                            child: Text(
+                              'Nu s-au găsit clienți',
+                              style: TextStyle(
+                                fontSize: 18,
+                                color: Colors.grey.shade600,
+                              ),
+                            ),
+                          )
+                        : ListView.builder(
+                            itemCount: filteredClients.length,
+                            itemBuilder: (context, index) {
+                              final client = filteredClients[index];
+                              return Card(
+                                elevation: 2,
+                                margin: EdgeInsets.symmetric(vertical: 6),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: ListTile(
+                                  contentPadding: EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 8,
+                                  ),
+                                  leading: CircleAvatar(
+                                    backgroundColor: Colors.teal.shade100,
+                                    child: Icon(
+                                      Icons.person,
+                                      color: Colors.teal.shade700,
+                                    ),
+                                  ),
+                                  title: Text(
+                                    '${client['firstName']} ${client['lastName']}',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.teal.shade800,
+                                    ),
+                                  ),
+                                  subtitle: client['email'] != null
+                                      ? Text(
+                                          client['email'],
+                                          style: TextStyle(
+                                            color: Colors.grey.shade600,
+                                          ),
+                                        )
+                                      : null,
+                                  trailing: Icon(
+                                    Icons.arrow_forward_ios,
+                                    color: Colors.teal.shade300,
+                                    size: 16,
+                                  ),
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            ClientProfileScreen(
+                                          client: client,
+                                          user: widget.user,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              );
+                            },
+                          ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -378,7 +726,7 @@ class _ExistingClientScreenState extends State<ExistingClientScreen> {
 }
 
 class ClientProfileScreen extends StatefulWidget {
-  final Map<String, dynamic> client;
+  Map<String, dynamic> client;
   final Map<String, dynamic> user;
 
   ClientProfileScreen({required this.client, required this.user});
@@ -387,50 +735,68 @@ class ClientProfileScreen extends StatefulWidget {
   _ClientProfileScreenState createState() => _ClientProfileScreenState();
 }
 
-class _ClientProfileScreenState extends State<ClientProfileScreen> {
+class _ClientProfileScreenState extends State<ClientProfileScreen>
+    with SingleTickerProviderStateMixin {
   List<dynamic> pets = [];
   List<dynamic> visits = [];
   bool showDeleted = false;
+  bool isLoading = true;
+  late TabController _tabController;
 
   @override
   void initState() {
     super.initState();
-    _fetchPets();
-    _fetchVisits();
+    _tabController = TabController(length: 2, vsync: this);
+    _fetchData();
+  }
+
+  Future<void> _fetchData() async {
+    setState(() => isLoading = true);
+    await Future.wait([
+      _fetchPets(),
+      _fetchVisits(),
+    ]);
+    setState(() => isLoading = false);
   }
 
   Future<void> _fetchPets() async {
-    final clientId = widget.client['id'];
-    final response = await http
-        .get(Uri.parse('http://localhost:3000/pets/client/$clientId'));
+    try {
+      final response = await http.get(Uri.parse(
+          'http://localhost:3000/pets/client/${widget.client['id']}'));
 
-    if (response.statusCode == 200) {
-      setState(() {
-        pets = jsonDecode(response.body);
-      });
-    } else {
-      // Handle error
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to load pets')),
-      );
+      if (response.statusCode == 200) {
+        setState(() => pets = jsonDecode(response.body));
+      } else {
+        _showError('Nu s-au putut încărca animalele');
+      }
+    } catch (e) {
+      _showError('Eroare de conexiune');
     }
   }
 
   Future<void> _fetchVisits() async {
-    final clientId = widget.client['id'];
-    final response = await http.get(Uri.parse(
-        'http://localhost:3000/visits/client/$clientId?includeDeleted=$showDeleted'));
+    try {
+      final response = await http.get(Uri.parse(
+          'http://localhost:3000/visits/client/${widget.client['id']}?includeDeleted=$showDeleted'));
 
-    if (response.statusCode == 200) {
-      setState(() {
-        visits = jsonDecode(response.body);
-      });
-    } else {
-      // Handle error
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to load visits')),
-      );
+      if (response.statusCode == 200) {
+        setState(() => visits = jsonDecode(response.body));
+      } else {
+        _showError('Nu s-au putut încărca vizitele');
+      }
+    } catch (e) {
+      _showError('Eroare de conexiune');
     }
+  }
+
+  void _showError(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.red,
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
   }
 
   @override
@@ -438,79 +804,84 @@ class _ClientProfileScreenState extends State<ClientProfileScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Profil Client'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: ListView(
-          children: [
-            _buildClientDetailsCard(),
-            SizedBox(height: 20),
-            _buildSectionHeader(
-              context,
-              'Animale Înregistrate',
-              'Adauga Animal',
-              () async {
-                final result = await Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) =>
-                          AnimalInfoScreen(client: widget.client)),
-                );
-                if (result == true) {
-                  _fetchPets(); // Refresh the list if a new pet was added
-                }
-              },
-            ),
-            _buildAnimalList(),
-            SizedBox(height: 20),
-            _buildSectionHeaderForVisits(
-              context,
-              'Vizite Client',
-              'Fisa Noua',
-              () async {
-                final result = await Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => VisitInfoScreen(
-                        client: widget.client, user: widget.user),
-                  ),
-                );
-                if (result == true) {
-                  _fetchVisits(); // Refresh the list if a new visit was added
-                }
-              },
-              showDeleted ? 'Fise sterse' : 'Fise active',
-              () {
-                setState(() {
-                  showDeleted = !showDeleted;
-                  _fetchVisits(); // Fetch visits with the updated query parameter
-                });
-              },
-            ),
-            _buildVisitList(),
+        elevation: 0,
+        backgroundColor: Colors.teal,
+        bottom: TabBar(
+          controller: _tabController,
+          tabs: [
+            Tab(text: 'Animale', icon: Icon(Icons.pets)),
+            Tab(text: 'Vizite', icon: Icon(Icons.medical_services)),
           ],
         ),
       ),
+      body: isLoading
+          ? Center(child: CircularProgressIndicator())
+          : Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Colors.teal.shade50, Colors.teal.shade100],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                ),
+              ),
+              child: Column(
+                children: [
+                  _buildClientDetailsCard(),
+                  Expanded(
+                    child: TabBarView(
+                      controller: _tabController,
+                      children: [
+                        _buildPetsTab(),
+                        _buildVisitsTab(),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+      floatingActionButton: _buildFloatingActionButton(),
     );
   }
 
   Widget _buildClientDetailsCard() {
     return Card(
+      margin: EdgeInsets.all(16),
       elevation: 4,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.white, Colors.teal.shade50],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        padding: EdgeInsets.all(16),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Detalii Client',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-            SizedBox(height: 10),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Detalii Client',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.teal.shade700,
+                  ),
+                ),
+                IconButton(
+                  icon: Icon(Icons.edit, color: Colors.teal),
+                  onPressed: _navigateToEditClientScreen,
+                ),
+              ],
+            ),
+            Divider(color: Colors.teal.shade200),
             _buildDetailRow(Icons.person, 'Nume:',
                 '${widget.client['firstName']} ${widget.client['lastName']}'),
             _buildDetailRow(Icons.email, 'Email:', widget.client['email']),
             _buildDetailRow(Icons.phone, 'Telefon:', widget.client['phone']),
-            // Add more client details here
           ],
         ),
       ),
@@ -519,384 +890,445 @@ class _ClientProfileScreenState extends State<ClientProfileScreen> {
 
   Widget _buildDetailRow(IconData icon, String label, String value) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      padding: EdgeInsets.symmetric(vertical: 8),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, size: 20),
-          SizedBox(width: 10),
-          Text(label, style: TextStyle(fontWeight: FontWeight.bold)),
-          SizedBox(width: 10),
-          Expanded(child: Text(value)),
+          Icon(icon, size: 20, color: Colors.teal.shade600),
+          SizedBox(width: 12),
+          Text(
+            label,
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Colors.teal.shade800,
+            ),
+          ),
+          SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              value,
+              style: TextStyle(color: Colors.grey.shade700),
+            ),
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildSectionHeader(BuildContext context, String title,
-      String buttonText, VoidCallback onPressed) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  Widget _buildPetsTab() {
+    return ListView(
+      padding: EdgeInsets.all(16),
       children: [
-        Text(title,
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-        ElevatedButton(
-          onPressed: onPressed,
-          child: Text(buttonText),
-        ),
+        for (var pet in pets) _buildPetCard(pet),
       ],
     );
   }
 
-  Widget _buildSectionHeaderForVisits(
-      BuildContext context,
-      String title,
-      String buttonText,
-      VoidCallback onPressed,
-      String secondButtonText,
-      VoidCallback secondOnPressed) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(title,
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-        Row(
+  Widget _buildPetCard(Map<String, dynamic> pet) {
+    return Card(
+      margin: EdgeInsets.only(bottom: 12),
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: ListTile(
+        contentPadding: EdgeInsets.all(16),
+        leading: CircleAvatar(
+          backgroundColor: Colors.teal.shade100,
+          child: Icon(Icons.pets, color: Colors.teal.shade700),
+        ),
+        title: Text(
+          pet['name'],
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Colors.teal.shade800,
+          ),
+        ),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ElevatedButton(
-              onPressed: onPressed,
-              child: Text(buttonText),
+            SizedBox(height: 8),
+            Text('Specie: ${pet['species']}'),
+            Text('Rasă: ${pet['breed']}'),
+            Text('Culoare: ${pet['color']}'),
+          ],
+        ),
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            IconButton(
+              icon: Icon(Icons.edit, color: Colors.teal),
+              onPressed: () => _editPet(pet),
             ),
-            SizedBox(width: 10),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor:
-                    showDeleted ? Colors.red : null, // Change color if pressed
-              ),
-              onPressed: secondOnPressed,
-              child: Text(secondButtonText),
+            IconButton(
+              icon: Icon(Icons.delete, color: Colors.red),
+              onPressed: () => _deletePet(pet),
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildVisitsTab() {
+    return Column(
+      children: [
+        _buildVisitsHeader(),
+        Expanded(
+          child: ListView(
+            padding: EdgeInsets.all(16),
+            children: [
+              for (var visit in visits) _buildVisitCard(visit),
+            ],
+          ),
+        ),
       ],
     );
   }
 
-  Widget _buildAnimalList() {
-    return Card(
-      elevation: 4,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      child: Column(
-        children: pets.map((pet) {
-          return ListTile(
-            leading: Icon(Icons.pets),
-            title: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                RichText(
-                  text: TextSpan(
-                    children: [
-                      TextSpan(
-                        text: 'Nume: ',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, color: Colors.black),
-                      ),
-                      TextSpan(
-                        text: pet['name'],
-                        style: TextStyle(color: Colors.black),
-                      ),
-                    ],
-                  ),
-                ),
-                RichText(
-                  text: TextSpan(
-                    children: [
-                      TextSpan(
-                        text: 'Specie: ',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, color: Colors.black),
-                      ),
-                      TextSpan(
-                        text: pet['species'],
-                        style: TextStyle(color: Colors.black),
-                      ),
-                    ],
-                  ),
-                ),
-                RichText(
-                  text: TextSpan(
-                    children: [
-                      TextSpan(
-                        text: 'Rasă: ',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, color: Colors.black),
-                      ),
-                      TextSpan(
-                        text: pet['breed'],
-                        style: TextStyle(color: Colors.black),
-                      ),
-                    ],
-                  ),
-                ),
-                RichText(
-                  text: TextSpan(
-                    children: [
-                      TextSpan(
-                        text: 'Culoare: ',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, color: Colors.black),
-                      ),
-                      TextSpan(
-                        text: pet['color'],
-                        style: TextStyle(color: Colors.black),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
+  Widget _buildVisitsHeader() {
+    return Padding(
+      padding: EdgeInsets.all(16),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            showDeleted ? 'Fișe șterse' : 'Fișe active',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.teal.shade700,
             ),
-            trailing: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                IconButton(
-                  icon: Icon(Icons.edit),
-                  onPressed: () async {
-                    final result = await Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => AnimalInfoScreen(
-                          client: widget.client,
-                          pet: pet,
-                        ),
-                      ),
-                    );
-                    if (result == true) {
-                      _fetchPets(); // Refresh the list if a pet was edited
-                    }
-                  },
-                ),
-                IconButton(
-                  icon: Icon(Icons.delete, color: Colors.red),
-                  onPressed: () async {
-                    final bool? confirmDelete = await showDialog<bool>(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          title: Text('Confirmare Stergere'),
-                          content: Text(
-                              'Sunteți sigur că doriți să ștergeți acest animal?'),
-                          actions: [
-                            TextButton(
-                              onPressed: () {
-                                Navigator.pop(context, false);
-                              },
-                              child: Text('Anulează'),
-                            ),
-                            TextButton(
-                              onPressed: () {
-                                Navigator.pop(context, true);
-                              },
-                              child: Text('Șterge'),
-                            ),
-                          ],
-                        );
-                      },
-                    );
-
-                    if (confirmDelete == true) {
-                      // Call the delete API
-                      final response = await http.delete(
-                        Uri.parse('http://localhost:3000/pets/${pet['id']}'),
-                        headers: <String, String>{
-                          'Content-Type': 'application/json; charset=UTF-8',
-                        },
-                      );
-
-                      if (response.statusCode == 200) {
-                        // Pet deleted successfully
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                              content: Text('Animalul a fost șters cu succes')),
-                        );
-                        _fetchPets(); // Refresh the list after deletion
-                      } else {
-                        // Handle error
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                              content: Text('Eroare la ștergerea animalului')),
-                        );
-                      }
-                    }
-                  },
-                ),
-              ],
+          ),
+          OutlinedButton.icon(
+            icon: Icon(
+              showDeleted ? Icons.visibility : Icons.visibility_off,
+              color: Colors.teal,
             ),
-          );
-        }).toList(),
+            label: Text(
+              showDeleted ? 'Arată active' : 'Arată șterse',
+              style: TextStyle(color: Colors.teal),
+            ),
+            onPressed: () {
+              setState(() {
+                showDeleted = !showDeleted;
+                _fetchVisits();
+              });
+            },
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildVisitList() {
+  Widget _buildVisitCard(Map<String, dynamic> visit) {
+    final DateTime visitDate = DateTime.parse(visit['createdAt']);
+    final String formattedDate =
+        "${visitDate.day}/${visitDate.month}/${visitDate.year}";
+
     return Card(
-      elevation: 4,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      child: Column(
-        children: visits.asMap().entries.map((entry) {
-          final int index = entry.key + 1; // Start counting from 1
-          final visit = entry.value;
-          final DateTime visitDate = DateTime.parse(visit['createdAt']);
-          final String formattedDate =
-              "${visitDate.day}/${visitDate.month}/${visitDate.year}";
-          return ListTile(
-            leading: Icon(Icons.medical_services),
-            title: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                    'Fisa $index - ${visit['animal']['name']} - $formattedDate - ${visit['visitReason']}'),
-                Row(
-                  children: [
-                    if (!showDeleted) ...[
-                      IconButton(
-                        icon: Icon(Icons.edit),
-                        tooltip: 'Editare Vizita',
-                        onPressed: () async {
-                          final result = await Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => VisitInfoScreen(
-                                  client: widget.client,
-                                  visit: visit,
-                                  user: widget.user),
-                            ),
-                          );
-                          if (result == true) {
-                            _fetchVisits(); // Refresh the list if a new pet was added
-                          }
-                        },
-                      ),
-                      IconButton(
-                        icon: Icon(Icons.receipt),
-                        tooltip: 'Generare factura',
-                        onPressed: () {
-                          // Handle generate invoice
-                        },
-                      ),
-                    ],
-                    if (showDeleted)
-                      IconButton(
-                        icon: Icon(Icons.restore, color: Colors.green),
-                        tooltip: 'Restaurare Vizita',
-                        onPressed: () async {
-                          final response = await http.put(
-                            Uri.parse(
-                                'http://localhost:3000/visits/${visit['id']}'),
-                            headers: <String, String>{
-                              'Content-Type': 'application/json; charset=UTF-8',
-                            },
-                            body: jsonEncode({
-                              ...visit,
-                              'isDeleted': false,
-                            }),
-                          );
-
-                          if (response.statusCode == 200) {
-                            // Visit restored successfully
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                  content: Text(
-                                      'Vizita a fost restaurată cu succes')),
-                            );
-                            _fetchVisits(); // Refresh the list after restoration
-                          } else {
-                            // Handle error
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                  content:
-                                      Text('Eroare la restaurarea vizitei')),
-                            );
-                          }
-                        },
-                      ),
-                    IconButton(
-                      icon: Icon(Icons.delete, color: Colors.red),
-                      tooltip: 'Sterge Vizita',
-                      onPressed: () async {
-                        final bool? confirmDelete = await showDialog<bool>(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return AlertDialog(
-                              title: Text('Confirmare Stergere'),
-                              content: Text(
-                                showDeleted
-                                    ? 'Sunteți sigur că doriți să ștergeți PERMANENT această vizită?'
-                                    : 'Sunteți sigur că doriți să mutați această vizită la "Fise sterse"?',
-                              ),
-                              actions: [
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.pop(context, false);
-                                  },
-                                  child: Text('Anulează'),
-                                ),
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.pop(context, true);
-                                  },
-                                  child: Text('Șterge'),
-                                ),
-                              ],
-                            );
-                          },
-                        );
-
-                        if (confirmDelete == true) {
-                          // Call the appropriate delete API based on showDeleted state
-                          final String apiUrl = showDeleted
-                              ? 'http://localhost:3000/visits/final/${visit['id']}'
-                              : 'http://localhost:3000/visits/soft/${visit['id']}';
-
-                          final response = await http.delete(
-                            Uri.parse(apiUrl),
-                            headers: <String, String>{
-                              'Content-Type': 'application/json; charset=UTF-8',
-                            },
-                          );
-
-                          if (response.statusCode == 200) {
-                            // Visit deleted successfully
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                  content:
-                                      Text('Vizita a fost ștearsă cu succes')),
-                            );
-                            _fetchVisits(); // Refresh the list after deletion
-                          } else {
-                            // Handle error
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                  content: Text('Eroare la ștergerea vizitei')),
-                            );
-                          }
-                        }
-                      },
-                    ),
-                  ],
-                ),
-              ],
-            ),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => VisitDetailScreen(visit: visit),
-                ),
-              );
-            },
-          );
-        }).toList(),
+      margin: EdgeInsets.only(bottom: 12),
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: ListTile(
+        contentPadding: EdgeInsets.all(16),
+        leading: CircleAvatar(
+          backgroundColor: Colors.teal.shade100,
+          child: Icon(Icons.medical_services, color: Colors.teal.shade700),
+        ),
+        title: Text(
+          '${visit['animal']['name']} - $formattedDate',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Colors.teal.shade800,
+          ),
+        ),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(height: 8),
+            Text(visit['visitReason']),
+          ],
+        ),
+        trailing: _buildVisitActions(visit),
+        onTap: () => _viewVisitDetails(visit),
       ),
     );
+  }
+
+  Widget _buildVisitActions(Map<String, dynamic> visit) {
+    if (showDeleted) {
+      return IconButton(
+        icon: Icon(Icons.restore, color: Colors.green),
+        onPressed: () => _restoreVisit(visit),
+      );
+    }
+
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        IconButton(
+          icon: Icon(Icons.edit, color: Colors.teal),
+          onPressed: () => _editVisit(visit),
+        ),
+        IconButton(
+          icon: Icon(Icons.receipt, color: Colors.blue),
+          onPressed: () => _generateInvoice(visit),
+        ),
+        IconButton(
+          icon: Icon(Icons.delete, color: Colors.red),
+          onPressed: () => _deleteVisit(visit),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildFloatingActionButton() {
+    return FloatingActionButton(
+      onPressed: () {
+        if (_tabController.index == 0) {
+          _addNewPet();
+        } else {
+          _addNewVisit();
+        }
+      },
+      backgroundColor: Colors.teal,
+      child: Icon(Icons.add),
+    );
+  }
+
+  // Navigation methods
+  void _navigateToEditClientScreen() async {
+    final updatedClient = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => EditClientScreen(
+          user: widget.user,
+          client: widget.client,
+        ),
+      ),
+    );
+
+    if (updatedClient != null) {
+      setState(() => widget.client = updatedClient);
+    }
+  }
+
+  // Action methods (implement these based on your needs)
+  void _addNewPet() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AnimalInfoScreen(client: widget.client),
+      ),
+    );
+    if (result == true) _fetchPets();
+  }
+
+  void _editPet(Map<String, dynamic> pet) async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AnimalInfoScreen(
+          client: widget.client,
+          pet: pet,
+        ),
+      ),
+    );
+    if (result == true) _fetchPets();
+  }
+
+  void _deletePet(Map<String, dynamic> pet) async {
+    final bool? confirmDelete = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Confirmare Ștergere'),
+          content: Text('Sunteți sigur că doriți să ștergeți acest animal?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: Text('Anulează'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: Text('Șterge'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirmDelete == true) {
+      try {
+        final response = await http.delete(
+          Uri.parse('http://localhost:3000/pets/${pet['id']}'),
+          headers: {'Content-Type': 'application/json; charset=UTF-8'},
+        );
+
+        if (response.statusCode == 200) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Animalul a fost șters cu succes')),
+          );
+          _fetchPets();
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Eroare la ștergerea animalului'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Eroare de conexiune'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  void _addNewVisit() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => VisitInfoScreen(
+          client: widget.client,
+          user: widget.user,
+        ),
+      ),
+    );
+    if (result == true) _fetchVisits();
+  }
+
+  void _editVisit(Map<String, dynamic> visit) async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => VisitInfoScreen(
+          client: widget.client,
+          visit: visit,
+          user: widget.user,
+        ),
+      ),
+    );
+    if (result == true) {
+      _fetchVisits();
+    }
+  }
+
+  void _deleteVisit(Map<String, dynamic> visit) async {
+    final bool? confirmDelete = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Confirmare Ștergere'),
+          content: Text(
+            showDeleted
+                ? 'Sunteți sigur că doriți să ștergeți PERMANENT această vizită?'
+                : 'Sunteți sigur că doriți să mutați această vizită la "Fișe șterse"?',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: Text('Anulează'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: Text('Șterge'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirmDelete == true) {
+      try {
+        final String apiUrl = showDeleted
+            ? 'http://localhost:3000/visits/final/${visit['id']}'
+            : 'http://localhost:3000/visits/soft/${visit['id']}';
+
+        final response = await http.delete(
+          Uri.parse(apiUrl),
+          headers: {'Content-Type': 'application/json; charset=UTF-8'},
+        );
+
+        if (response.statusCode == 200) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Vizita a fost ștearsă cu succes')),
+          );
+          _fetchVisits();
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Eroare la ștergerea vizitei'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Eroare de conexiune'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  void _restoreVisit(Map<String, dynamic> visit) async {
+    try {
+      final response = await http.put(
+        Uri.parse('http://localhost:3000/visits/${visit['id']}'),
+        headers: {'Content-Type': 'application/json; charset=UTF-8'},
+        body: jsonEncode({
+          ...visit,
+          'isDeleted': false,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Vizita a fost restaurată cu succes')),
+        );
+        _fetchVisits();
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Eroare la restaurarea vizitei'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Eroare de conexiune'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  void _viewVisitDetails(Map<String, dynamic> visit) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => VisitDetailScreen(visit: visit),
+      ),
+    );
+  }
+
+  void _generateInvoice(Map<String, dynamic> visit) {
+    // Implement invoice generation
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
   }
 }
 
@@ -908,76 +1340,181 @@ class VisitDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final DateTime visitDate = DateTime.parse(visit['createdAt']);
-    final String formattedDate =
-        "${visitDate.day}/${visitDate.month}/${visitDate.year}";
+    final String formattedDate = "${visitDate.day}/${visitDate.month}/${visitDate.year}";
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Detalii Vizita'),
+        title: Text(
+          'Detalii Vizită',
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        backgroundColor: Colors.teal,
+        elevation: 0,
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.teal.shade50, Colors.teal.shade100],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              _buildSection(
+                'Informații Vizită',
+                Icons.medical_services,
+                [
+                  _buildDetailRow('Vizita nr.:', '${visit['id']}'),
+                  _buildDetailRow('Data:', formattedDate),
+                  _buildDetailRow('Motiv Vizită:', visit['visitReason']),
+                  _buildDetailRow('Observații:', visit['observations']),
+                  _buildDetailRow('Diagnostic:', visit['diagnosis']),
+                  _buildDetailRow('Recomandări:', visit['recommendations']),
+                ],
+              ),
+              SizedBox(height: 16),
+              _buildSection(
+                'Informații Animal',
+                Icons.pets,
+                [
+                  _buildDetailRow('Nume:', visit['animal']['name']),
+                  _buildDetailRow('Specie:', visit['animal']['species']),
+                ],
+              ),
+              SizedBox(height: 16),
+              _buildSection(
+                'Tratament',
+                Icons.medication,
+                [
+                  _buildDetailRow('Nume:', visit['treatment']['name']),
+                  _buildDetailRow('Cantitate:', '${visit['treatmentQuantity']} ${visit['treatment']['unit']}'),
+                  _buildDetailRow('Preț:', '${visit['treatment']['price']} RON'),
+                ],
+              ),
+              SizedBox(height: 16),
+              _buildSection(
+                'Manopere',
+                Icons.build,
+                [
+                  ...visit['procedures'].map<Widget>((procedure) {
+                    return _buildDetailRow(
+                      procedure['name'],
+                      '${procedure['price']} RON',
+                    );
+                  }).toList(),
+                ],
+              ),
+              SizedBox(height: 16),
+              _buildSection(
+                'Informații Client',
+                Icons.person,
+                [
+                  _buildDetailRow('Nume:', '${visit['client']['firstName']} ${visit['client']['lastName']}'),
+                  _buildDetailRow('Email:', visit['client']['email']),
+                  _buildDetailRow('Telefon:', visit['client']['phone']),
+                ],
+              ),
+              SizedBox(height: 16),
+              _buildSection(
+                'Informații Administrative',
+                Icons.admin_panel_settings,
+                [
+                  _buildDetailRow('Creat de:', visit['createdBy']),
+                ],
+              ),
+              SizedBox(height: 24),
+              ElevatedButton.icon(
+                onPressed: () {
+                  // Handle generate invoice
+                },
+                icon: Icon(Icons.receipt, color: Colors.white),
+                label: Text(
+                  'Generare Factură',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.teal.shade600,
+                  padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSection(String title, IconData icon, List<Widget> children) {
+    return Card(
+      elevation: 4,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Padding(
+        padding: EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Vizita ${visit['id']}',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-            SizedBox(height: 20),
-            Text('Data: $formattedDate', style: TextStyle(fontSize: 18)),
-            Text('Motiv Vizita: ${visit['visitReason']}',
-                style: TextStyle(fontSize: 18)),
-            Text('Observatii: ${visit['observations']}',
-                style: TextStyle(fontSize: 18)),
-            Text('Diagnostic: ${visit['diagnosis']}',
-                style: TextStyle(fontSize: 18)),
-            Text('Recomandari: ${visit['recommendations']}',
-                style: TextStyle(fontSize: 18)),
-            SizedBox(height: 20),
-            Text('Animal:',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-            Text('Nume: ${visit['animal']['name']}',
-                style: TextStyle(fontSize: 18)),
-            Text('Specie: ${visit['animal']['species']}',
-                style: TextStyle(fontSize: 18)),
-            SizedBox(height: 20),
-            Text('Tratament:',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-            Text('Nume: ${visit['treatment']['name']}',
-                style: TextStyle(fontSize: 18)),
-            Text(
-                'Cantitate: ${visit['treatmentQuantity']} ${visit['treatment']['unit']}',
-                style: TextStyle(fontSize: 18)),
-            Text('Pret: ${visit['treatment']['price']}',
-                style: TextStyle(fontSize: 18)),
-            SizedBox(height: 20),
-            Text('Manopere:',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-            ...visit['procedures'].map<Widget>((procedure) {
-              return Text('${procedure['name']} - Pret: ${procedure['price']}',
-                  style: TextStyle(fontSize: 18));
-            }).toList(),
-            SizedBox(height: 20),
-            Text('Client:',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-            Text(
-                'Nume: ${visit['client']['firstName']} ${visit['client']['lastName']}',
-                style: TextStyle(fontSize: 18)),
-            Text('Email: ${visit['client']['email']}',
-                style: TextStyle(fontSize: 18)),
-            Text('Telefon: ${visit['client']['phone']}',
-                style: TextStyle(fontSize: 18)),
-            SizedBox(height: 20),
-            Text('Creat de: ${visit['createdBy']}',
-                style: TextStyle(fontSize: 18)),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                // Handle generate invoice
-              },
-              child: Text('Generare factura'),
+            Row(
+              children: [
+                Icon(icon, color: Colors.teal.shade700),
+                SizedBox(width: 8),
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.teal.shade700,
+                  ),
+                ),
+              ],
             ),
+            SizedBox(height: 16),
+            ...children,
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildDetailRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Colors.teal.shade800,
+            ),
+          ),
+          SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              value,
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.grey.shade700,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -1057,114 +1594,164 @@ class _AnimalInfoScreenState extends State<AnimalInfoScreen> {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Informatii Animal'),
+@override
+Widget build(BuildContext context) {
+  return Scaffold(
+    appBar: AppBar(
+      title: Text(
+        'Informații Animal',
+        style: TextStyle(
+          fontSize: 24,
+          fontWeight: FontWeight.bold,
+        ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
+      backgroundColor: Colors.teal,
+      elevation: 0,
+    ),
+    body: Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [Colors.teal.shade50, Colors.teal.shade100],
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+        ),
+      ),
+      child: SingleChildScrollView(
+        padding: EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
-          child: ListView(
+          child: Column(
             children: [
-              _buildTextField('Nume', Icons.pets, controller: _nameController),
-              _buildDropdownField(
-                  'Specie', ['Caine', 'Pisica', 'Altceva'], _selectedSpecies,
-                  (value) {
-                setState(() {
-                  _selectedSpecies = value;
-                });
-              }),
-              _buildDropdownField(
-                  'Rasa', ['Rasa 1', 'Rasa 2', 'Rasa 3'], _selectedBreed,
-                  (value) {
-                setState(() {
-                  _selectedBreed = value;
-                });
-              }),
-              _buildDropdownField('Gen', ['Mascul', 'Femelă'], _selectedGender,
-                  (value) {
-                setState(() {
-                  _selectedGender = value;
-                });
-              }),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8.0),
-                child: TextFormField(
-                  controller: _birthDateController,
-                  decoration: InputDecoration(
-                    labelText: 'Data Nașterii',
-                    prefixIcon: Icon(Icons.calendar_today),
-                    border: OutlineInputBorder(),
-                  ),
-                  readOnly: true,
-                  onTap: () => _selectDate(context),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Vă rugăm să selectați data nașterii';
-                    }
-                    return null;
-                  },
-                ),
+              _buildSection(
+                'Informații de Bază',
+                Icons.pets,
+                [
+                  _buildTextField('Nume', Icons.pets, controller: _nameController),
+                  _buildDropdownField('Specie', ['Caine', 'Pisica', 'Altceva'], _selectedSpecies, (value) {
+                    setState(() => _selectedSpecies = value);
+                  }),
+                  _buildDropdownField('Rasă', ['Rasa 1', 'Rasa 2', 'Rasa 3'], _selectedBreed, (value) {
+                    setState(() => _selectedBreed = value);
+                  }),
+                  _buildDropdownField('Gen', ['Mascul', 'Femelă'], _selectedGender, (value) {
+                    setState(() => _selectedGender = value);
+                  }),
+                  _buildDateField(context),
+                  _buildTextField('Culoare', Icons.color_lens, controller: _colorController),
+                ],
               ),
-              _buildTextField('Culoare', Icons.color_lens,
-                  controller: _colorController),
-              _buildDropdownField(
-                  'Status Reproductiv',
-                  ['Necastrat', 'Castrat'],
-                  _selectedReproductiveStatus, (value) {
-                setState(() {
-                  _selectedReproductiveStatus = value;
-                });
-              }),
-              _buildTextField('Poză (Optional)', Icons.photo,
-                  isOptional: true, controller: _photoController),
-              _buildTextField('Alergii (Optional)', Icons.warning,
-                  isOptional: true, controller: _allergiesController),
-              _buildTextField('Semne Distinctive (Optional)', Icons.pets,
-                  isOptional: true, controller: _distinctiveSignsController),
-              _buildTextField(
-                  'Seria și Numărul (Carnetul Animalului) (Optional)',
-                  Icons.book,
-                  isOptional: true,
-                  controller: _animalCardController),
-              _buildTextField('Număr Asigurare (Optional)', Icons.security,
-                  isOptional: true, controller: _insuranceNumberController),
-              _buildTextField('Grupa Sanguină (Optional)', Icons.bloodtype,
-                  isOptional: true, controller: _bloodGroupController),
-              _buildTextField('Cod Microcip (Optional)', Icons.qr_code,
-                  isOptional: true, controller: _microchipCodeController),
-              _buildTextField('Seria Pașaportului (Optional)', Icons.book,
-                  isOptional: true, controller: _passportSeriesController),
-              _buildTextField('Descriere', Icons.description,
-                  controller: _descriptionController),
-              _buildTextField('Alege un Plan de Sănătate (Optional)',
-                  Icons.health_and_safety,
-                  isOptional: true, controller: _healthPlanController),
-              _buildTextField(
-                  'Alerte Pacient (Optional)', Icons.notification_important,
-                  isOptional: true, controller: _patientAlertsController),
-              _buildTextField('Note Interne (Optional)', Icons.notes,
-                  maxLines: 3,
-                  isOptional: true,
-                  controller: _internalNotesController),
-              SizedBox(height: 20),
+              SizedBox(height: 16),
+              _buildSection(
+                'Detalii Medicale',
+                Icons.medical_services,
+                [
+                  _buildDropdownField('Status Reproductiv', ['Necastrat', 'Castrat'],
+                      _selectedReproductiveStatus, (value) {
+                    setState(() => _selectedReproductiveStatus = value);
+                  }),
+                  _buildTextField('Alergii', Icons.warning,
+                      isOptional: true, controller: _allergiesController),
+                  _buildTextField('Grupa Sanguină', Icons.bloodtype,
+                      isOptional: true, controller: _bloodGroupController),
+                  _buildTextField('Plan de Sănătate', Icons.health_and_safety,
+                      isOptional: true, controller: _healthPlanController),
+                  _buildTextField('Alerte Pacient', Icons.notification_important,
+                      isOptional: true, controller: _patientAlertsController),
+                ],
+              ),
+              SizedBox(height: 16),
+              _buildSection(
+                'Documente',
+                Icons.document_scanner,
+                [
+                  _buildTextField('Carnet Animal', Icons.book,
+                      isOptional: true, controller: _animalCardController),
+                  _buildTextField('Număr Asigurare', Icons.security,
+                      isOptional: true, controller: _insuranceNumberController),
+                  _buildTextField('Cod Microcip', Icons.qr_code,
+                      isOptional: true, controller: _microchipCodeController),
+                  _buildTextField('Serie Pașaport', Icons.book,
+                      isOptional: true, controller: _passportSeriesController),
+                ],
+              ),
+              SizedBox(height: 16),
+              _buildSection(
+                'Informații Adiționale',
+                Icons.more_horiz,
+                [
+                  _buildTextField('Poză', Icons.photo,
+                      isOptional: true, controller: _photoController),
+                  _buildTextField('Semne Distinctive', Icons.pets,
+                      isOptional: true, controller: _distinctiveSignsController),
+                  _buildTextField('Descriere', Icons.description,
+                      controller: _descriptionController),
+                  _buildTextField('Note Interne', Icons.notes,
+                      maxLines: 3, isOptional: true, controller: _internalNotesController),
+                ],
+              ),
+              SizedBox(height: 24),
               ElevatedButton(
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
                     await _savePet();
                   }
                 },
-                child: Text('Salvează'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.teal.shade600,
+                  padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                child: Text(
+                  'Salvează',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
               ),
             ],
           ),
         ),
       ),
-    );
-  }
+    ),
+  );
+}
+
+Widget _buildSection(String title, IconData icon, List<Widget> children) {
+  return Card(
+    elevation: 4,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(12),
+    ),
+    child: Padding(
+      padding: EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(icon, color: Colors.teal.shade700),
+              SizedBox(width: 8),
+              Text(
+                title,
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.teal.shade700,
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 16),
+          ...children,
+        ],
+      ),
+    ),
+  );
+}
 
   Future<void> _savePet() async {
     final url = widget.pet != null
@@ -1222,56 +1809,111 @@ class _AnimalInfoScreenState extends State<AnimalInfoScreen> {
   String? _selectedGender;
   String? _selectedReproductiveStatus;
 
-  Widget _buildTextField(String labelText, IconData icon,
-      {int maxLines = 1,
-      bool isOptional = false,
-      TextEditingController? controller}) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: TextFormField(
-        controller: controller,
-        decoration: InputDecoration(
-          labelText: labelText,
-          prefixIcon: Icon(icon),
-          border: OutlineInputBorder(),
+Widget _buildTextField(String labelText, IconData icon,
+    {int maxLines = 1, bool isOptional = false, required TextEditingController controller}) {
+  return Padding(
+    padding: const EdgeInsets.only(bottom: 16),
+    child: TextFormField(
+      controller: controller,
+      maxLines: maxLines,
+      decoration: InputDecoration(
+        labelText: labelText + (isOptional ? ' (Opțional)' : ''),
+        prefixIcon: Icon(icon, color: Colors.teal.shade600),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
         ),
-        maxLines: maxLines,
-        validator: (value) {
-          if (!isOptional && (value == null || value.isEmpty)) {
-            return 'Vă rugăm să introduceți $labelText';
-          }
-          return null;
-        },
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(color: Colors.teal.shade200),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(color: Colors.teal.shade400, width: 2),
+        ),
+        filled: true,
+        fillColor: Colors.white,
       ),
-    );
-  }
+      validator: (value) {
+        if (!isOptional && (value == null || value.isEmpty)) {
+          return 'Vă rugăm să introduceți $labelText';
+        }
+        return null;
+      },
+    ),
+  );
+}
 
-  Widget _buildDropdownField(String labelText, List<String> items,
-      String? selectedValue, ValueChanged<String?> onChanged) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: DropdownButtonFormField<String>(
-        decoration: InputDecoration(
-          labelText: labelText,
-          border: OutlineInputBorder(),
+Widget _buildDropdownField(String labelText, List<String> items, String? selectedValue, ValueChanged<String?> onChanged) {
+  return Padding(
+    padding: const EdgeInsets.only(bottom: 16),
+    child: DropdownButtonFormField<String>(
+      decoration: InputDecoration(
+        labelText: labelText,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
         ),
-        value: selectedValue,
-        items: items.map((String value) {
-          return DropdownMenuItem<String>(
-            value: value,
-            child: Text(value),
-          );
-        }).toList(),
-        onChanged: onChanged,
-        validator: (value) {
-          if (value == null || value.isEmpty) {
-            return 'Vă rugăm să selectați $labelText';
-          }
-          return null;
-        },
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(color: Colors.teal.shade200),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(color: Colors.teal.shade400, width: 2),
+        ),
+        filled: true,
+        fillColor: Colors.white,
       ),
-    );
-  }
+      value: selectedValue,
+      items: items.map((String value) {
+        return DropdownMenuItem<String>(
+          value: value,
+          child: Text(value),
+        );
+      }).toList(),
+      onChanged: onChanged,
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'Vă rugăm să selectați $labelText';
+        }
+        return null;
+      },
+    ),
+  );
+}
+
+Widget _buildDateField(BuildContext context) {
+  return Padding(
+    padding: const EdgeInsets.only(bottom: 16),
+    child: TextFormField(
+      controller: _birthDateController,
+      readOnly: true,
+      decoration: InputDecoration(
+        labelText: 'Data Nașterii',
+        prefixIcon: Icon(Icons.calendar_today, color: Colors.teal.shade600),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(color: Colors.teal.shade200),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(color: Colors.teal.shade400, width: 2),
+        ),
+        filled: true,
+        fillColor: Colors.white,
+      ),
+      onTap: () => _selectDate(context),
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'Vă rugăm să selectați data nașterii';
+        }
+        return null;
+      },
+    ),
+  );
+}
 
   Future<void> _selectDate(BuildContext context) async {
     DateTime? picked = await showDatePicker(
@@ -1303,12 +1945,8 @@ class VisitInfoScreen extends StatefulWidget {
 class _VisitInfoScreenState extends State<VisitInfoScreen> {
   final _formKey = GlobalKey<FormState>();
 
-  // Dummy data for dropdowns
-  final List<Map<String, dynamic>> animals = [
-    {'id': 1, 'name': 'Animal 1', 'species': 'Dog'},
-    {'id': 2, 'name': 'Animal 2', 'species': 'Cat'},
-    {'id': 3, 'name': 'Animal 3', 'species': 'Bird'},
-  ];
+  // Variables for dropdowns
+  List<Map<String, dynamic>> animals = [];
   final List<Map<String, dynamic>> treatments = [
     {'id': 1, 'name': 'Treatment 1', 'unit': 'mg', 'price': 10.0},
     {'id': 2, 'name': 'Treatment 2', 'unit': 'ml', 'price': 20.0},
@@ -1337,69 +1975,227 @@ class _VisitInfoScreenState extends State<VisitInfoScreen> {
   @override
   void initState() {
     super.initState();
+    _fetchAnimals();
     if (widget.visit != null) {
       _initializeFields(widget.visit!);
     }
   }
 
+  Future<void> _fetchAnimals() async {
+    final clientId =
+        widget.client['id']; // Assuming client ID is available in widget.client
+    final url = 'http://localhost:3000/pets/client/$clientId';
+
+    try {
+      final response = await http.get(Uri.parse(url));
+      if (response.statusCode == 200) {
+        final List<dynamic> data = json.decode(response.body);
+        setState(() {
+          animals = data
+              .map((animal) => {
+                    'id': animal['id'],
+                    'name': animal['name'],
+                    'species': animal['species'],
+                  })
+              .toList();
+        });
+      } else {
+        // Handle error
+        print('Failed to load animals');
+      }
+    } catch (e) {
+      // Handle error
+      print('Error: $e');
+    }
+  }
+
   void _initializeFields(Map<String, dynamic> visit) {
-    _visitReasonController.text = visit['visitReason'];
-    _observationsController.text = visit['observations'];
-    _diagnosisController.text = visit['diagnosis'];
-    _recommendationsController.text = visit['recommendations'];
-    _selectedAnimal =
-        animals.firstWhere((animal) => animal['id'] == visit['animal']['id']);
-    _selectedTreatment = treatments
-        .firstWhere((treatment) => treatment['id'] == visit['treatment']['id']);
-    _treatmentQuantityController.text = visit['treatmentQuantity'];
-    _selectedProcedures = List<Map<String, dynamic>>.from(visit['procedures']);
+    _visitReasonController.text = visit['visitReason'] ?? '';
+    _observationsController.text = visit['observations'] ?? '';
+    _diagnosisController.text = visit['diagnosis'] ?? '';
+    _recommendationsController.text = visit['recommendations'] ?? '';
+
+    // Handle animal data
+    final animalData = visit['animal'];
+    if (animalData is String) {
+      final animalJson = json.decode(animalData);
+      // Find matching animal or create new map with same structure
+      _selectedAnimal = animals.firstWhere(
+        (animal) => animal['id'] == animalJson['id'],
+        orElse: () => Map<String, dynamic>.from(animalJson),
+      );
+    } else if (animalData is Map) {
+      _selectedAnimal = animals.firstWhere(
+        (animal) => animal['id'] == animalData['id'],
+        orElse: () =>
+            Map<String, dynamic>.from(animalData as Map<String, dynamic>),
+      );
+    }
+
+    // Handle treatment data
+    final treatmentData = visit['treatment'];
+    if (treatmentData is String) {
+      // If it's a JSON string, parse it
+      final treatmentJson = json.decode(treatmentData);
+      _selectedTreatment = treatments.firstWhere(
+        (treatment) => treatment['id'] == treatmentJson['id'],
+        orElse: () => treatmentJson, // Use the data from JSON if no match found
+      );
+    } else {
+      // If it's already a Map
+      _selectedTreatment = treatments.firstWhere(
+        (treatment) => treatment['id'] == treatmentData['id'],
+        orElse: () => treatmentData, // Use the data as is if no match found
+      );
+    }
+
+    _treatmentQuantityController.text =
+        visit['treatmentQuantity']?.toString() ?? '';
+
+    // Handle procedures
+    final proceduresData = visit['procedures'];
+    if (proceduresData is String) {
+      // If it's a JSON string, parse it
+      _selectedProcedures =
+          List<Map<String, dynamic>>.from(json.decode(proceduresData));
+    } else {
+      // If it's already a List
+      _selectedProcedures =
+          List<Map<String, dynamic>>.from(proceduresData ?? []);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Informatii Vizita'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: ListView(
-            children: [
-              _buildTextField('Motiv Vizita', Icons.medical_services,
-                  controller: _visitReasonController),
-              _buildTextField('Observatii', Icons.note,
-                  maxLines: 3, controller: _observationsController),
-              _buildTextField('Diagnostic', Icons.assignment,
-                  controller: _diagnosisController),
-              _buildTextField('Recomandari', Icons.recommend,
-                  maxLines: 3, controller: _recommendationsController),
-              if (showAnimalDropdown) _buildAnimalDropdownField(),
-              _buildTreatmentDropdownField(),
-              _buildMultiSelectDropdownField('Manopere', procedures, (value) {
-                setState(() {
-                  if (_selectedProcedures.contains(value)) {
-                    _selectedProcedures.remove(value);
-                  } else {
-                    if (value != null) {
-                      _selectedProcedures.add(value);
-                    }
-                  }
-                });
-              }),
-              SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () async {
-                  if (_formKey.currentState!.validate()) {
-                    await _saveVisit();
-                    Navigator.pop(context, true);
-                  }
-                },
-                child: Text('Salveaza'),
-              ),
-            ],
+        title: Text(
+          'Informații Vizită',
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
           ),
+        ),
+        backgroundColor: Colors.teal,
+        elevation: 0,
+      ),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.teal.shade50, Colors.teal.shade100],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: SingleChildScrollView(
+          padding: EdgeInsets.all(16.0),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                _buildSection(
+                  'Detalii Vizită',
+                  Icons.medical_services,
+                  [
+                    _buildTextField('Motiv Vizită', Icons.medical_services,
+                        controller: _visitReasonController),
+                    _buildTextField('Observații', Icons.note,
+                        maxLines: 3, controller: _observationsController),
+                    _buildTextField('Diagnostic', Icons.assignment,
+                        controller: _diagnosisController),
+                    _buildTextField('Recomandări', Icons.recommend,
+                        maxLines: 3, controller: _recommendationsController),
+                  ],
+                ),
+                SizedBox(height: 16),
+                _buildSection(
+                  'Animal și Tratament',
+                  Icons.pets,
+                  [
+                    if (showAnimalDropdown) _buildAnimalDropdownField(),
+                    _buildTreatmentDropdownField(),
+                  ],
+                ),
+                SizedBox(height: 16),
+                _buildSection(
+                  'Manopere',
+                  Icons.build,
+                  [
+                    _buildMultiSelectDropdownField('Manopere', procedures,
+                        (value) {
+                      setState(() {
+                        if (_selectedProcedures.contains(value)) {
+                          _selectedProcedures.remove(value);
+                        } else {
+                          if (value != null) {
+                            _selectedProcedures.add(value);
+                          }
+                        }
+                      });
+                    }),
+                  ],
+                ),
+                SizedBox(height: 24),
+                ElevatedButton(
+                  onPressed: () async {
+                    if (_formKey.currentState!.validate()) {
+                      await _saveVisit();
+                      Navigator.pop(context, true);
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.teal.shade600,
+                    padding: EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: Text(
+                    'Salvează',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSection(String title, IconData icon, List<Widget> children) {
+    return Card(
+      elevation: 4,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Padding(
+        padding: EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(icon, color: Colors.teal.shade700),
+                SizedBox(width: 8),
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.teal.shade700,
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 16),
+            ...children,
+          ],
         ),
       ),
     );
@@ -1464,8 +2260,20 @@ class _VisitInfoScreenState extends State<VisitInfoScreen> {
         controller: controller,
         decoration: InputDecoration(
           labelText: labelText,
-          prefixIcon: Icon(icon),
-          border: OutlineInputBorder(),
+          prefixIcon: Icon(icon, color: Colors.teal.shade600),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+            borderSide: BorderSide(color: Colors.teal.shade200),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+            borderSide: BorderSide(color: Colors.teal.shade400, width: 2),
+          ),
+          filled: true,
+          fillColor: Colors.white,
         ),
         maxLines: maxLines,
         validator: (value) {
@@ -1481,30 +2289,50 @@ class _VisitInfoScreenState extends State<VisitInfoScreen> {
   Widget _buildAnimalDropdownField() {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: DropdownButtonFormField<Map<String, dynamic>>(
+      child: DropdownButtonFormField<int>(
         decoration: InputDecoration(
           labelText: 'Animal',
-          prefixIcon: Icon(Icons.pets),
-          border: OutlineInputBorder(),
+          prefixIcon: Icon(Icons.pets, color: Colors.teal.shade600),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+            borderSide: BorderSide(color: Colors.teal.shade200),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+            borderSide: BorderSide(color: Colors.teal.shade400, width: 2),
+          ),
+          filled: true,
+          fillColor: Colors.white,
         ),
+        value: _selectedAnimal?['id'],
         items: animals.map((animal) {
-          return DropdownMenuItem<Map<String, dynamic>>(
-            value: animal,
-            child: Text(animal['name']),
+          return DropdownMenuItem<int>(
+            value: animal['id'],
+            child: Text(animal['name'] ?? ''),
           );
         }).toList(),
-        onChanged: (value) {
-          setState(() {
-            _selectedAnimal = value;
+        onChanged: (selectedId) {
+          if (selectedId != null) {
+            setState(() {
+            final selectedAnimal = animals.firstWhere((animal) => animal['id'] == selectedId);
+            _selectedAnimal = {
+              'id': selectedAnimal['id'],
+              'name': selectedAnimal['name'],
+              'species': selectedAnimal['species'],
+            };
           });
+          }
         },
-        value: _selectedAnimal,
         validator: (value) {
           if (value == null) {
-            return 'Vă rugăm să selectați Animal';
+            return 'Vă rugăm să selectați un animal';
           }
           return null;
         },
+        isExpanded: true,
       ),
     );
   }
@@ -1519,8 +2347,21 @@ class _VisitInfoScreenState extends State<VisitInfoScreen> {
             child: DropdownButtonFormField<Map<String, dynamic>>(
               decoration: InputDecoration(
                 labelText: 'Tratament',
-                prefixIcon: Icon(Icons.medical_services),
-                border: OutlineInputBorder(),
+                prefixIcon:
+                    Icon(Icons.medical_services, color: Colors.teal.shade600),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide(color: Colors.teal.shade200),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide(color: Colors.teal.shade400, width: 2),
+                ),
+                filled: true,
+                fillColor: Colors.white,
               ),
               items: treatments.map((treatment) {
                 return DropdownMenuItem<Map<String, dynamic>>(
@@ -1550,7 +2391,20 @@ class _VisitInfoScreenState extends State<VisitInfoScreen> {
                 controller: _treatmentQuantityController,
                 decoration: InputDecoration(
                   labelText: 'Cantitate',
-                  border: OutlineInputBorder(),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: BorderSide(color: Colors.teal.shade200),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide:
+                        BorderSide(color: Colors.teal.shade400, width: 2),
+                  ),
+                  filled: true,
+                  fillColor: Colors.white,
                 ),
                 keyboardType: TextInputType.number,
                 validator: (value) {
@@ -1564,7 +2418,13 @@ class _VisitInfoScreenState extends State<VisitInfoScreen> {
           if (_selectedTreatment != null)
             Padding(
               padding: const EdgeInsets.only(left: 8.0),
-              child: Text(_selectedTreatment?['unit'] ?? ''),
+              child: Text(
+                _selectedTreatment?['unit'] ?? '',
+                style: TextStyle(
+                  color: Colors.teal.shade700,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ),
         ],
       ),
@@ -1580,8 +2440,20 @@ class _VisitInfoScreenState extends State<VisitInfoScreen> {
       child: InputDecorator(
         decoration: InputDecoration(
           labelText: labelText,
-          prefixIcon: Icon(Icons.check_box),
-          border: OutlineInputBorder(),
+          prefixIcon: Icon(Icons.check_box, color: Colors.teal.shade600),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+            borderSide: BorderSide(color: Colors.teal.shade200),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+            borderSide: BorderSide(color: Colors.teal.shade400, width: 2),
+          ),
+          filled: true,
+          fillColor: Colors.white,
         ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -1604,14 +2476,30 @@ class _VisitInfoScreenState extends State<VisitInfoScreen> {
                   });
                 }
               },
-              child: Text('Selectează Manopere'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.teal.shade400,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: Text(
+                'Selectează Manopere',
+                style: TextStyle(color: Colors.white),
+              ),
             ),
             SizedBox(width: 10),
             Expanded(
               child: Wrap(
+                spacing: 8,
+                runSpacing: 8,
                 children: _selectedProcedures.map((procedure) {
                   return Chip(
-                    label: Text(procedure['name']),
+                    label: Text(
+                      procedure['name'],
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    backgroundColor: Colors.teal.shade400,
+                    deleteIconColor: Colors.white,
                     onDeleted: () {
                       setState(() {
                         _selectedProcedures.remove(procedure);
@@ -1650,42 +2538,422 @@ class _MultiSelectDialogState extends State<MultiSelectDialog> {
 
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      title: Text('Selectează Manopere'),
-      content: SingleChildScrollView(
-        child: ListBody(
-          children: widget.items.map((item) {
-            return CheckboxListTile(
-              value: _selectedItems.contains(item),
-              title: Text(item['name']),
-              controlAffinity: ListTileControlAffinity.leading,
-              onChanged: (bool? selected) {
-                setState(() {
-                  if (selected == true) {
-                    _selectedItems.add(item);
-                  } else {
-                    _selectedItems.remove(item);
-                  }
-                });
-              },
-            );
-          }).toList(),
+    return Dialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+      ),
+      elevation: 8,
+      child: Container(
+        padding: EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              'Selectează Manopere',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.teal.shade700,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: 16),
+            Container(
+              constraints: BoxConstraints(
+                maxHeight: MediaQuery.of(context).size.height * 0.5,
+              ),
+              child: SingleChildScrollView(
+                child: ListBody(
+                  children: widget.items.map((item) {
+                    final isSelected = _selectedItems.contains(item);
+                    return Container(
+                      margin: EdgeInsets.symmetric(vertical: 4),
+                      decoration: BoxDecoration(
+                        color: isSelected ? Colors.teal.shade50 : Colors.white,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: isSelected
+                              ? Colors.teal.shade300
+                              : Colors.grey.shade300,
+                        ),
+                      ),
+                      child: CheckboxListTile(
+                        value: isSelected,
+                        title: Text(
+                          item['name'],
+                          style: TextStyle(
+                            color: isSelected
+                                ? Colors.teal.shade700
+                                : Colors.black87,
+                            fontWeight: isSelected
+                                ? FontWeight.bold
+                                : FontWeight.normal,
+                          ),
+                        ),
+                        secondary: Text(
+                          '${item['price']} RON',
+                          style: TextStyle(
+                            color: Colors.grey.shade700,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        controlAffinity: ListTileControlAffinity.leading,
+                        activeColor: Colors.teal.shade600,
+                        checkColor: Colors.white,
+                        onChanged: (bool? selected) {
+                          setState(() {
+                            if (selected == true) {
+                              _selectedItems.add(item);
+                            } else {
+                              _selectedItems.remove(item);
+                            }
+                          });
+                        },
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ),
+            ),
+            SizedBox(height: 16),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: Text(
+                    'Anulează',
+                    style: TextStyle(
+                      color: Colors.grey.shade700,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                SizedBox(width: 8),
+                ElevatedButton(
+                  onPressed: () => Navigator.pop(context, _selectedItems),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.teal.shade600,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  ),
+                  child: Text(
+                    'Salvează',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
-      actions: [
-        TextButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          child: Text('Anulează'),
-        ),
-        TextButton(
-          onPressed: () {
-            Navigator.pop(context, _selectedItems);
-          },
-          child: Text('OK'),
-        ),
-      ],
     );
+  }
+}
+
+class EditClientScreen extends StatelessWidget {
+  final Map<String, dynamic> client;
+  final Map<String, dynamic> user;
+  final _formKey = GlobalKey<FormState>();
+
+  EditClientScreen({required this.client, required this.user}) {
+    // Initialize the controllers with client details
+    _firstNameController.text = client['firstName'] ?? '';
+    _lastNameController.text = client['lastName'] ?? '';
+    _emailController.text = client['email'] ?? '';
+    _phoneController.text = client['phone'] ?? '';
+    _personalIdController.text = client['personalId'] ?? '';
+    _identityCardController.text = client['identityCard'] ?? '';
+    _addressController.text = client['address'] ?? '';
+    _birthDateController.text = client['birthDate'] ?? '';
+    _notesController.text = client['notes'] ?? '';
+  }
+
+  // Define TextEditingController for each field
+  final TextEditingController _firstNameController = TextEditingController();
+  final TextEditingController _lastNameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _personalIdController = TextEditingController();
+  final TextEditingController _identityCardController = TextEditingController();
+  final TextEditingController _addressController = TextEditingController();
+  final TextEditingController _birthDateController = TextEditingController();
+  final TextEditingController _notesController = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          'Editare Client',
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        backgroundColor: Colors.teal,
+        elevation: 0,
+      ),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.teal.shade50, Colors.teal.shade100],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: SingleChildScrollView(
+          padding: EdgeInsets.all(16.0),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              children: [
+                _buildSection(
+                  'Informații Personale',
+                  Icons.person,
+                  [
+                    _buildTextField('Prenume', Icons.person_outline,
+                        controller: _firstNameController),
+                    _buildTextField('Nume', Icons.person_outline,
+                        controller: _lastNameController),
+                    _buildTextField('Email', Icons.email,
+                        controller: _emailController),
+                    _buildPhoneField(),
+                  ],
+                ),
+                SizedBox(height: 16),
+                _buildSection(
+                  'Documente',
+                  Icons.document_scanner,
+                  [
+                    _buildTextField('CNP', Icons.credit_card,
+                        isOptional: true, controller: _personalIdController),
+                    _buildTextField('Serie/Număr CI', Icons.badge,
+                        isOptional: true, controller: _identityCardController),
+                  ],
+                ),
+                SizedBox(height: 16),
+                _buildSection(
+                  'Detalii Adiționale',
+                  Icons.more_horiz,
+                  [
+                    _buildTextField('Adresă', Icons.home,
+                        isOptional: true, controller: _addressController),
+                    _buildDateField(
+                        context, 'Data Nașterii', Icons.calendar_today,
+                        isOptional: true, controller: _birthDateController),
+                    _buildTextField('Note', Icons.note,
+                        maxLines: 3,
+                        isOptional: true,
+                        controller: _notesController),
+                  ],
+                ),
+                SizedBox(height: 24),
+                ElevatedButton(
+                  onPressed: () async {
+                    if (_formKey.currentState!.validate()) {
+                      final updatedClient = await _updateClient();
+                      if (updatedClient != null) {
+                        Navigator.pop(context, updatedClient);
+                      }
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.teal.shade600,
+                    padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: Text(
+                    'Salvează',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSection(String title, IconData icon, List<Widget> children) {
+    return Card(
+      elevation: 4,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Padding(
+        padding: EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(icon, color: Colors.teal.shade700),
+                SizedBox(width: 8),
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.teal.shade700,
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 16),
+            ...children,
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTextField(String label, IconData icon,
+      {bool isOptional = false,
+      int maxLines = 1,
+      required TextEditingController controller}) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: TextFormField(
+        controller: controller,
+        maxLines: maxLines,
+        decoration: InputDecoration(
+          labelText: label + (isOptional ? ' (Opțional)' : ''),
+          prefixIcon: Icon(icon, color: Colors.teal.shade600),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+            borderSide: BorderSide(color: Colors.teal.shade200),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+            borderSide: BorderSide(color: Colors.teal.shade400, width: 2),
+          ),
+          filled: true,
+          fillColor: Colors.white,
+        ),
+        validator: (value) {
+          if (!isOptional && (value == null || value.isEmpty)) {
+            return 'Vă rugăm să introduceți $label';
+          }
+          return null;
+        },
+      ),
+    );
+  }
+
+  Widget _buildPhoneField() {
+    return _buildTextField('Telefon', Icons.phone,
+        controller: _phoneController);
+  }
+
+  Widget _buildDateField(BuildContext context, String label, IconData icon,
+      {bool isOptional = false, required TextEditingController controller}) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: TextFormField(
+        controller: controller,
+        readOnly: true,
+        decoration: InputDecoration(
+          labelText: label + (isOptional ? ' (Opțional)' : ''),
+          prefixIcon: Icon(icon, color: Colors.teal.shade600),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+            borderSide: BorderSide(color: Colors.teal.shade200),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+            borderSide: BorderSide(color: Colors.teal.shade400, width: 2),
+          ),
+          filled: true,
+          fillColor: Colors.white,
+        ),
+        onTap: () async {
+          FocusScope.of(context).requestFocus(new FocusNode());
+          DateTime? picked = await showDatePicker(
+            context: context,
+            initialDate: DateTime.now(),
+            firstDate: DateTime(1900),
+            lastDate: DateTime.now(),
+            builder: (context, child) {
+              return Theme(
+                data: Theme.of(context).copyWith(
+                  colorScheme: ColorScheme.light(
+                    primary: Colors.teal.shade400,
+                    onPrimary: Colors.white,
+                    surface: Colors.white,
+                    onSurface: Colors.black,
+                  ),
+                ),
+                child: child!,
+              );
+            },
+          );
+          if (picked != null) {
+            controller.text = DateFormat('yyyy-MM-dd').format(picked);
+          }
+        },
+      ),
+    );
+  }
+
+  Future<Map<String, dynamic>?> _updateClient() async {
+    final updatedBy = user['id'];
+    final Map<String, String> clientData = {
+      'firstName': _firstNameController.text,
+      'lastName': _lastNameController.text,
+      'email': _emailController.text,
+      'phone': _phoneController.text,
+      'personalId': _personalIdController.text,
+      'identityCard': _identityCardController.text,
+      'address': _addressController.text,
+      'notes': _notesController.text,
+      'updatedBy': updatedBy.toString(),
+    };
+
+    if (_birthDateController.text.isNotEmpty &&
+        _birthDateController.text != 'Invalid date') {
+      clientData['birthDate'] = _birthDateController.text;
+    }
+
+    final response = await http.put(
+      Uri.parse('http://localhost:3000/clients/$updatedBy'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(clientData),
+    );
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      // Handle error
+      ScaffoldMessenger.of(_formKey.currentContext!).showSnackBar(
+        SnackBar(content: Text('Failed to save client')),
+      );
+      return null;
+    }
   }
 }
