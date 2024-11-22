@@ -1,0 +1,39 @@
+const { Client } = require('../models');
+
+const createClient = async (req, res) => {
+    const { firstName, lastName, email, phone, personalId, idCardNumber, address, birthDate, notes, cabinetId, createdBy } = req.body;
+
+    try {
+        const newClient = await Client.create({
+            firstName,
+            lastName,
+            email,
+            phone,
+            personalId,
+            idCardNumber,
+            address,
+            birthDate,
+            notes,
+            cabinetId,
+            createdBy
+        });
+
+        res.status(201).json(newClient);
+    } catch (err) {
+        res.status(500).json({ message: 'Server error', error: err.message });
+    }
+};
+
+const getClientsByCabinetId = async (req, res) => {
+    const { cabinetId } = req.params;
+
+    try {
+        // Fetch clients by cabinetId
+        const clients = await Client.findAll({ where: { cabinetId } });
+        res.status(200).json(clients);
+    } catch (err) {
+        res.status(500).json({ message: 'Server error', error: err.message });
+    }
+};
+
+module.exports = { createClient, getClientsByCabinetId };

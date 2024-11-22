@@ -1,0 +1,56 @@
+const express = require('express');
+const bodyParser = require('body-parser');
+const { sequelize } = require('./models');
+const multer = require('multer');
+const path = require('path');
+const cors = require('cors');
+
+const authRoutes = require('./routes/auth');
+const cabinetRoutes = require('./routes/cabinet');
+const userRoutes = require('./routes/user');
+const clientRoutes = require('./routes/client');
+const petRoutes = require('./routes/pet');
+const visitRoutes = require('./routes/visit');
+
+require('dotenv').config();
+
+const app = express();
+const port = 3000;
+
+// Enable CORS
+app.use(cors());
+
+// Middleware to parse JSON bodies
+app.use(bodyParser.json());
+
+// Set up multer for file uploads
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'uploads/');
+    },
+    filename: (req, file, cb) => {
+        cb(null, `${Date.now()}-${file.originalname}`);
+    }
+});
+const upload = multer({ storage });
+
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+// Routes
+app.use('/auth/register', upload.single('photo'), authRoutes);
+app.use('/auth', authRoutes);
+app.use('/cabinets', cabinetRoutes);
+app.use('/users', userRoutes);
+app.use('/clients', clientRoutes);
+app.use('/pets', petRoutes);
+app.use('/visits', visitRoutes);
+
+app.get('/', (req, res) => {
+    res.send('Hello World!');
+});
+
+sequelize.sync().then(() => {
+    app.listen(port, () => {
+        console.log(`Server is running on http://localhost:${port}`);
+    });
+});
