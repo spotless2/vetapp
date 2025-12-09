@@ -3,117 +3,160 @@ import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-class ClientPage extends StatelessWidget {
+class ClientPage extends StatefulWidget {
   final Map<String, dynamic> user;
 
   ClientPage({required this.user});
 
   @override
+  _ClientPageState createState() => _ClientPageState();
+}
+
+class _ClientPageState extends State<ClientPage> {
+  int _hoveredIndex = -1;
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFF5F5F5),
       appBar: AppBar(
-        title: Text(
-          'Gestionare Clienți',
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
+        title: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.people_rounded, size: 26),
+            const SizedBox(width: 10),
+            const Text(
+              'Gestionare Clienți',
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.w600,
+                letterSpacing: 0.5,
+              ),
+            ),
+          ],
         ),
         centerTitle: true,
-        elevation: 0,
-        backgroundColor: Colors.teal,
+        elevation: 2,
+        backgroundColor: const Color(0xFF00796B),
+        shadowColor: Colors.black.withOpacity(0.3),
       ),
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Colors.teal.shade50, Colors.teal.shade100],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            children: [
-              _buildClientCard(
-                context,
-                'Client Nou',
-                'Înregistrare client nou în sistem',
-                Icons.person_add,
-                Colors.teal.shade400,
-                () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => NewClientScreen(user: user),
-                    ),
-                  );
-                },
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(24.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Selectați o Opțiune',
+              style: TextStyle(
+                fontSize: 26,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF00796B),
               ),
-              SizedBox(height: 20),
-              _buildClientCard(
-                context,
-                'Client Existent',
-                'Căutare și gestionare clienți existenți',
-                Icons.search,
-                Colors.blue.shade400,
-                () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ExistingClientScreen(user: user),
-                    ),
-                  );
-                },
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Gestionați clienții cabinetului dumneavoastră',
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.grey.shade600,
               ),
-            ],
-          ),
+            ),
+            const SizedBox(height: 32),
+            _buildModernClientCard(
+              context,
+              'Client Nou',
+              'Înregistrare client nou în sistem',
+              Icons.person_add_rounded,
+              const Color(0xFF00796B),
+              0,
+              () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => NewClientScreen(user: widget.user),
+                  ),
+                );
+              },
+            ),
+            const SizedBox(height: 20),
+            _buildModernClientCard(
+              context,
+              'Client Existent',
+              'Căutare și gestionare clienți existenți',
+              Icons.search_rounded,
+              const Color(0xFF1976D2),
+              1,
+              () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        ExistingClientScreen(user: widget.user),
+                  ),
+                );
+              },
+            ),
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildClientCard(BuildContext context, String title, String subtitle,
-      IconData icon, Color color, VoidCallback onTap) {
+  Widget _buildModernClientCard(
+    BuildContext context,
+    String title,
+    String subtitle,
+    IconData icon,
+    Color color,
+    int index,
+    VoidCallback onTap,
+  ) {
+    final isHovered = _hoveredIndex == index;
+
     return MouseRegion(
-      cursor: SystemMouseCursors.click,
+      onEnter: (_) => setState(() => _hoveredIndex = index),
+      onExit: (_) => setState(() => _hoveredIndex = -1),
       child: AnimatedContainer(
-        duration: Duration(milliseconds: 200),
+        duration: const Duration(milliseconds: 250),
         curve: Curves.easeInOut,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(15),
-          boxShadow: [
-            BoxShadow(
-              color: color.withOpacity(0.3),
-              blurRadius: 15,
-              offset: Offset(0, 5),
-            ),
-          ],
-        ),
-        child: Material(
-          color: Colors.transparent,
+        transform: Matrix4.translationValues(0, isHovered ? -4 : 0, 0),
+        child: Card(
+          elevation: isHovered ? 12 : 4,
+          shadowColor: color.withOpacity(0.4),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
           child: InkWell(
-            borderRadius: BorderRadius.circular(15),
+            borderRadius: BorderRadius.circular(16),
             onTap: onTap,
-            child: Padding(
-              padding: EdgeInsets.all(20),
+            child: Container(
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                gradient: LinearGradient(
+                  colors: [
+                    Colors.white,
+                    color.withOpacity(0.05),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+              ),
               child: Row(
                 children: [
                   Container(
-                    padding: EdgeInsets.all(15),
+                    padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
                       color: color.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(16),
                     ),
                     child: Icon(
                       icon,
-                      size: 30,
+                      size: 36,
                       color: color,
                     ),
                   ),
-                  SizedBox(width: 20),
+                  const SizedBox(width: 20),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -121,26 +164,26 @@ class ClientPage extends StatelessWidget {
                         Text(
                           title,
                           style: TextStyle(
-                            fontSize: 20,
+                            fontSize: 22,
                             fontWeight: FontWeight.bold,
-                            color: Colors.black87,
+                            color: Colors.grey.shade800,
                           ),
                         ),
-                        SizedBox(height: 5),
+                        const SizedBox(height: 6),
                         Text(
                           subtitle,
                           style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.black54,
+                            fontSize: 15,
+                            color: Colors.grey.shade600,
                           ),
                         ),
                       ],
                     ),
                   ),
                   Icon(
-                    Icons.arrow_forward_ios,
+                    Icons.arrow_forward_ios_rounded,
                     color: color,
-                    size: 20,
+                    size: 24,
                   ),
                 ],
               ),
@@ -178,105 +221,129 @@ class _NewClientScreenState extends State<NewClientScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFF5F5F5),
       appBar: AppBar(
-        title: Text(
-          'Înregistrare Client Nou',
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        backgroundColor: Colors.teal,
-        elevation: 0,
-      ),
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Colors.teal.shade50, Colors.teal.shade100],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
-        ),
-        child: SingleChildScrollView(
-          padding: EdgeInsets.all(16.0),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                _buildSection(
-                  'Informații Personale',
-                  Icons.person,
-                  [
-                    _buildTextField('Prenume', Icons.person_outline,
-                        controller: _firstNameController),
-                    _buildTextField('Nume', Icons.person_outline,
-                        controller: _lastNameController),
-                    _buildPhoneField(),
-                    _buildTextField('Email', Icons.email,
-                        controller: _emailController),
-                  ],
-                ),
-                SizedBox(height: 16),
-                _buildSection(
-                  'Documente',
-                  Icons.document_scanner,
-                  [
-                    _buildTextField('CNP', Icons.credit_card,
-                        isOptional: true, controller: _personalIdController),
-                    _buildTextField('Serie/Număr CI', Icons.badge,
-                        isOptional: true, controller: _identityCardController),
-                  ],
-                ),
-                SizedBox(height: 16),
-                _buildSection(
-                  'Detalii Adiționale',
-                  Icons.more_horiz,
-                  [
-                    _buildTextField('Adresă', Icons.home,
-                        isOptional: true, controller: _addressController),
-                    _buildDateField(
-                        context, 'Data Nașterii', Icons.calendar_today,
-                        isOptional: true, controller: _birthDateController),
-                    _buildTextField('Note', Icons.note,
-                        maxLines: 3,
-                        isOptional: true,
-                        controller: _notesController),
-                  ],
-                ),
-                SizedBox(height: 24),
-                ElevatedButton(
-                  onPressed: () async {
-                    if (_formKey.currentState!.validate()) {
-                      final client = await _saveClient();
-                      if (client != null) {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => ClientProfileScreen(
-                                client: client, user: widget.user),
-                          ),
-                        );
-                      }
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.teal.shade400,
-                    padding: EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  child: Text(
-                    'Înregistrare Client',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ],
+        title: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.person_add_rounded, size: 26),
+            const SizedBox(width: 10),
+            const Text(
+              'Înregistrare Client Nou',
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.w600,
+                letterSpacing: 0.5,
+              ),
             ),
+          ],
+        ),
+        centerTitle: true,
+        backgroundColor: const Color(0xFF00796B),
+        elevation: 2,
+        shadowColor: Colors.black.withOpacity(0.3),
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(24.0),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const Text(
+                'Date Client',
+                style: TextStyle(
+                  fontSize: 26,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF00796B),
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Completați informațiile clientului',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.grey.shade600,
+                ),
+              ),
+              const SizedBox(height: 24),
+              _buildSection(
+                'Informații Personale',
+                Icons.person_rounded,
+                [
+                  _buildTextField('Prenume', Icons.person_outline_rounded,
+                      controller: _firstNameController),
+                  _buildTextField('Nume', Icons.person_outline_rounded,
+                      controller: _lastNameController),
+                  _buildPhoneField(),
+                  _buildTextField('Email', Icons.email_rounded,
+                      controller: _emailController),
+                ],
+              ),
+              const SizedBox(height: 20),
+              _buildSection(
+                'Documente',
+                Icons.document_scanner_rounded,
+                [
+                  _buildTextField('CNP', Icons.credit_card_rounded,
+                      isOptional: true, controller: _personalIdController),
+                  _buildTextField('Serie/Număr CI', Icons.badge_rounded,
+                      isOptional: true, controller: _identityCardController),
+                ],
+              ),
+              const SizedBox(height: 20),
+              _buildSection(
+                'Detalii Adiționale',
+                Icons.info_rounded,
+                [
+                  _buildTextField('Adresă', Icons.home_rounded,
+                      isOptional: true, controller: _addressController),
+                  _buildDateField(
+                      context, 'Data Nașterii', Icons.calendar_today_rounded,
+                      isOptional: true, controller: _birthDateController),
+                  _buildTextField('Note', Icons.note_rounded,
+                      maxLines: 3,
+                      isOptional: true,
+                      controller: _notesController),
+                ],
+              ),
+              const SizedBox(height: 32),
+              ElevatedButton.icon(
+                onPressed: () async {
+                  if (_formKey.currentState!.validate()) {
+                    final client = await _saveClient();
+                    if (client != null) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ClientProfileScreen(
+                              client: client, user: widget.user),
+                        ),
+                      );
+                    }
+                  }
+                },
+                icon:
+                    const Icon(Icons.check_circle_rounded, color: Colors.white),
+                label: const Text(
+                  'Înregistrare Client',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF00796B),
+                  padding: const EdgeInsets.symmetric(vertical: 18),
+                  elevation: 2,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       ),
@@ -599,127 +666,182 @@ class _ExistingClientScreenState extends State<ExistingClientScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFF5F5F5),
       appBar: AppBar(
-        title: Text(
-          'Căutare Client',
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-          ),
+        title: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.search_rounded, size: 26),
+            const SizedBox(width: 10),
+            const Text(
+              'Căutare Client',
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.w600,
+                letterSpacing: 0.5,
+              ),
+            ),
+          ],
         ),
-        backgroundColor: Colors.teal,
-        elevation: 0,
+        centerTitle: true,
+        backgroundColor: const Color(0xFF1976D2),
+        elevation: 2,
+        shadowColor: Colors.black.withOpacity(0.3),
       ),
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Colors.teal.shade50, Colors.teal.shade100],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            children: [
-              Card(
-                elevation: 4,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  child: TextField(
-                    decoration: InputDecoration(
-                      labelText: 'Căutare după Nume',
-                      labelStyle: TextStyle(color: Colors.teal.shade600),
-                      prefixIcon:
-                          Icon(Icons.search, color: Colors.teal.shade600),
-                      border: InputBorder.none,
-                      hintText: 'Introduceți numele clientului...',
-                    ),
-                    onChanged: _filterClients,
+      body: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(24),
+            color: Colors.white,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Căutați Clienți',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF1976D2),
                   ),
                 ),
-              ),
-              SizedBox(height: 16),
-              Expanded(
-                child: isLoading
-                    ? Center(child: CircularProgressIndicator())
-                    : filteredClients.isEmpty
-                        ? Center(
-                            child: Text(
+                const SizedBox(height: 16),
+                TextField(
+                  decoration: InputDecoration(
+                    labelText: 'Căutare după Nume',
+                    prefixIcon: const Icon(Icons.search_rounded,
+                        color: Color(0xFF1976D2)),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(color: Colors.grey.shade300),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide:
+                          const BorderSide(color: Color(0xFF1976D2), width: 2),
+                    ),
+                    filled: true,
+                    fillColor: Colors.grey.shade50,
+                    contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 16),
+                  ),
+                  onChanged: _filterClients,
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 8),
+          Expanded(
+            child: isLoading
+                ? Center(
+                    child: CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                          const Color(0xFF1976D2)),
+                    ),
+                  )
+                : filteredClients.isEmpty
+                    ? Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.search_off_rounded,
+                              size: 80,
+                              color: Colors.grey.shade400,
+                            ),
+                            const SizedBox(height: 16),
+                            Text(
                               'Nu s-au găsit clienți',
                               style: TextStyle(
                                 fontSize: 18,
                                 color: Colors.grey.shade600,
+                                fontWeight: FontWeight.w500,
                               ),
                             ),
-                          )
-                        : ListView.builder(
-                            itemCount: filteredClients.length,
-                            itemBuilder: (context, index) {
-                              final client = filteredClients[index];
-                              return Card(
-                                elevation: 2,
-                                margin: EdgeInsets.symmetric(vertical: 6),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
+                          ],
+                        ),
+                      )
+                    : ListView.builder(
+                        padding: const EdgeInsets.all(16),
+                        itemCount: filteredClients.length,
+                        itemBuilder: (context, index) {
+                          final client = filteredClients[index];
+                          return Card(
+                            elevation: 2,
+                            margin: const EdgeInsets.only(bottom: 12),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            child: ListTile(
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 20,
+                                vertical: 12,
+                              ),
+                              leading: Container(
+                                padding: const EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  color:
+                                      const Color(0xFF1976D2).withOpacity(0.1),
+                                  shape: BoxShape.circle,
                                 ),
-                                child: ListTile(
-                                  contentPadding: EdgeInsets.symmetric(
-                                    horizontal: 16,
-                                    vertical: 8,
-                                  ),
-                                  leading: CircleAvatar(
-                                    backgroundColor: Colors.teal.shade100,
-                                    child: Icon(
-                                      Icons.person,
-                                      color: Colors.teal.shade700,
-                                    ),
-                                  ),
-                                  title: Text(
-                                    '${client['firstName']} ${client['lastName']}',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.teal.shade800,
-                                    ),
-                                  ),
-                                  subtitle: client['email'] != null
-                                      ? Text(
-                                          client['email'],
-                                          style: TextStyle(
-                                            color: Colors.grey.shade600,
-                                          ),
-                                        )
-                                      : null,
-                                  trailing: Icon(
-                                    Icons.arrow_forward_ios,
-                                    color: Colors.teal.shade300,
-                                    size: 16,
-                                  ),
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            ClientProfileScreen(
-                                          client: client,
-                                          user: widget.user,
+                                child: const Icon(
+                                  Icons.person_rounded,
+                                  color: Color(0xFF1976D2),
+                                  size: 24,
+                                ),
+                              ),
+                              title: Text(
+                                '${client['firstName']} ${client['lastName']}',
+                                style: const TextStyle(
+                                  fontSize: 17,
+                                  fontWeight: FontWeight.w600,
+                                  color: Color(0xFF424242),
+                                ),
+                              ),
+                              subtitle: client['email'] != null
+                                  ? Padding(
+                                      padding: const EdgeInsets.only(top: 4),
+                                      child: Text(
+                                        client['email'],
+                                        style: TextStyle(
+                                          color: Colors.grey.shade600,
+                                          fontSize: 14,
                                         ),
                                       ),
-                                    );
-                                  },
+                                    )
+                                  : null,
+                              trailing: Container(
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color:
+                                      const Color(0xFF1976D2).withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(8),
                                 ),
-                              );
-                            },
-                          ),
-              ),
-            ],
+                                child: const Icon(
+                                  Icons.arrow_forward_ios_rounded,
+                                  color: Color(0xFF1976D2),
+                                  size: 16,
+                                ),
+                              ),
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => ClientProfileScreen(
+                                      client: client,
+                                      user: widget.user,
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          );
+                        },
+                      ),
           ),
-        ),
+        ],
       ),
     );
   }
@@ -802,115 +924,155 @@ class _ClientProfileScreenState extends State<ClientProfileScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFF5F5F5),
       appBar: AppBar(
-        title: Text('Profil Client'),
+        title: const Text(
+          'Profil Client',
+          style: TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
+        ),
         elevation: 0,
-        backgroundColor: Colors.teal,
+        backgroundColor: const Color(0xFF00796B),
+        foregroundColor: Colors.white,
         bottom: TabBar(
           controller: _tabController,
-          tabs: [
-            Tab(text: 'Animale', icon: Icon(Icons.pets)),
-            Tab(text: 'Vizite', icon: Icon(Icons.medical_services)),
+          indicatorColor: Colors.white,
+          indicatorWeight: 3,
+          labelColor: Colors.white,
+          unselectedLabelColor: Colors.white70,
+          labelStyle:
+              const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+          tabs: const [
+            Tab(text: 'Animale', icon: Icon(Icons.pets_rounded, size: 22)),
+            Tab(
+                text: 'Vizite',
+                icon: Icon(Icons.medical_services_rounded, size: 22)),
           ],
         ),
       ),
       body: isLoading
-          ? Center(child: CircularProgressIndicator())
-          : Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Colors.teal.shade50, Colors.teal.shade100],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                ),
+          ? Center(
+              child: CircularProgressIndicator(
+                valueColor:
+                    AlwaysStoppedAnimation<Color>(const Color(0xFF00796B)),
               ),
-              child: Column(
-                children: [
-                  _buildClientDetailsCard(),
-                  Expanded(
-                    child: TabBarView(
-                      controller: _tabController,
-                      children: [
-                        _buildPetsTab(),
-                        _buildVisitsTab(),
-                      ],
-                    ),
+            )
+          : Column(
+              children: [
+                _buildClientDetailsCard(),
+                Expanded(
+                  child: TabBarView(
+                    controller: _tabController,
+                    children: [
+                      _buildPetsTab(),
+                      _buildVisitsTab(),
+                    ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
       floatingActionButton: _buildFloatingActionButton(),
     );
   }
 
   Widget _buildClientDetailsCard() {
-    return Card(
-      margin: EdgeInsets.all(16),
-      elevation: 4,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Colors.white, Colors.teal.shade50],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-          borderRadius: BorderRadius.circular(12),
+    return Container(
+      margin: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [const Color(0xFF00796B), const Color(0xFF00897B)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
         ),
-        padding: EdgeInsets.all(16),
-        child: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Detalii Client',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.teal.shade700,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    'Detalii Client',
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
                   ),
-                ),
-                IconButton(
-                  icon: Icon(Icons.edit, color: Colors.teal),
-                  onPressed: _navigateToEditClientScreen,
-                ),
-              ],
-            ),
-            Divider(color: Colors.teal.shade200),
-            _buildDetailRow(Icons.person, 'Nume:',
-                '${widget.client['firstName']} ${widget.client['lastName']}'),
-            _buildDetailRow(Icons.email, 'Email:', widget.client['email']),
-            _buildDetailRow(Icons.phone, 'Telefon:', widget.client['phone']),
-          ],
+                  IconButton(
+                    icon: const Icon(Icons.edit_rounded, color: Colors.white),
+                    onPressed: _navigateToEditClientScreen,
+                    style: IconButton.styleFrom(
+                      backgroundColor: Colors.white.withOpacity(0.2),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              _buildDetailRow(Icons.person_rounded, 'Nume',
+                  '${widget.client['firstName']} ${widget.client['lastName']}'),
+              const SizedBox(height: 12),
+              _buildDetailRow(
+                  Icons.email_rounded, 'Email', widget.client['email']),
+              const SizedBox(height: 12),
+              _buildDetailRow(
+                  Icons.phone_rounded, 'Telefon', widget.client['phone']),
+            ],
+          ),
         ),
       ),
     );
   }
 
   Widget _buildDetailRow(IconData icon, String label, String value) {
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: 8),
-      child: Row(
-        children: [
-          Icon(icon, size: 20, color: Colors.teal.shade600),
-          SizedBox(width: 12),
-          Text(
-            label,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: Colors.teal.shade800,
-            ),
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.2),
+            borderRadius: BorderRadius.circular(8),
           ),
-          SizedBox(width: 8),
-          Expanded(
-            child: Text(
-              value,
-              style: TextStyle(color: Colors.grey.shade700),
-            ),
+          child: Icon(icon, size: 20, color: Colors.white),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 13,
+                  color: Colors.white.withOpacity(0.9),
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                value,
+                style: const TextStyle(
+                  fontSize: 16,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -925,42 +1087,84 @@ class _ClientProfileScreenState extends State<ClientProfileScreen>
 
   Widget _buildPetCard(Map<String, dynamic> pet) {
     return Card(
-      margin: EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.only(bottom: 12),
       elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: ListTile(
-        contentPadding: EdgeInsets.all(16),
-        leading: CircleAvatar(
-          backgroundColor: Colors.teal.shade100,
-          child: Icon(Icons.pets, color: Colors.teal.shade700),
-        ),
-        title: Text(
-          pet['name'],
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: Colors.teal.shade800,
-          ),
-        ),
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
           children: [
-            SizedBox(height: 8),
-            Text('Specie: ${pet['species']}'),
-            Text('Rasă: ${pet['breed']}'),
-            Text('Culoare: ${pet['color']}'),
-          ],
-        ),
-        trailing: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            IconButton(
-              icon: Icon(Icons.edit, color: Colors.teal),
-              onPressed: () => _editPet(pet),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: const Color(0xFF00796B).withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Icon(
+                Icons.pets_rounded,
+                color: Color(0xFF00796B),
+                size: 28,
+              ),
             ),
-            IconButton(
-              icon: Icon(Icons.delete, color: Colors.red),
-              onPressed: () => _deletePet(pet),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    pet['name'],
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF424242),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Specie: ${pet['species']}',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey.shade700,
+                    ),
+                  ),
+                  Text(
+                    'Rasă: ${pet['breed']}',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey.shade700,
+                    ),
+                  ),
+                  Text(
+                    'Culoare: ${pet['color']}',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey.shade700,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                IconButton(
+                  icon:
+                      const Icon(Icons.edit_rounded, color: Color(0xFF00796B)),
+                  onPressed: () => _editPet(pet),
+                  style: IconButton.styleFrom(
+                    backgroundColor: const Color(0xFF00796B).withOpacity(0.1),
+                  ),
+                ),
+                const SizedBox(height: 4),
+                IconButton(
+                  icon: const Icon(Icons.delete_rounded,
+                      color: Color(0xFFD32F2F)),
+                  onPressed: () => _deletePet(pet),
+                  style: IconButton.styleFrom(
+                    backgroundColor: const Color(0xFFD32F2F).withOpacity(0.1),
+                  ),
+                ),
+              ],
             ),
           ],
         ),
@@ -985,27 +1189,66 @@ class _ClientProfileScreenState extends State<ClientProfileScreen>
   }
 
   Widget _buildVisitsHeader() {
-    return Padding(
-      padding: EdgeInsets.all(16),
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            showDeleted ? 'Fișe șterse' : 'Fișe active',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Colors.teal.shade700,
-            ),
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF00796B).withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(
+                  showDeleted
+                      ? Icons.delete_rounded
+                      : Icons.check_circle_rounded,
+                  color: const Color(0xFF00796B),
+                  size: 20,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Text(
+                showDeleted ? 'Fișe șterse' : 'Fișe active',
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF424242),
+                ),
+              ),
+            ],
           ),
-          OutlinedButton.icon(
+          ElevatedButton.icon(
             icon: Icon(
-              showDeleted ? Icons.visibility : Icons.visibility_off,
-              color: Colors.teal,
+              showDeleted
+                  ? Icons.visibility_rounded
+                  : Icons.visibility_off_rounded,
+              size: 18,
             ),
             label: Text(
               showDeleted ? 'Arată active' : 'Arată șterse',
-              style: TextStyle(color: Colors.teal),
+            ),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF00796B),
+              foregroundColor: Colors.white,
+              elevation: 0,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
             ),
             onPressed: () {
               setState(() {
@@ -1025,31 +1268,66 @@ class _ClientProfileScreenState extends State<ClientProfileScreen>
         "${visitDate.day}/${visitDate.month}/${visitDate.year}";
 
     return Card(
-      margin: EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.only(bottom: 12),
       elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: ListTile(
-        contentPadding: EdgeInsets.all(16),
-        leading: CircleAvatar(
-          backgroundColor: Colors.teal.shade100,
-          child: Icon(Icons.medical_services, color: Colors.teal.shade700),
-        ),
-        title: Text(
-          '${visit['animal']['name']} - $formattedDate',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: Colors.teal.shade800,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF00796B).withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Icon(
+                  Icons.medical_services_rounded,
+                  color: Color(0xFF00796B),
+                  size: 28,
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      visit['animal']['name'],
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF424242),
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      formattedDate,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey.shade600,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      visit['visitReason'],
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey.shade700,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              ),
+              _buildVisitActions(visit),
+            ],
           ),
         ),
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(height: 8),
-            Text(visit['visitReason']),
-          ],
-        ),
-        trailing: _buildVisitActions(visit),
         onTap: () => _viewVisitDetails(visit),
       ),
     );
@@ -1058,8 +1336,11 @@ class _ClientProfileScreenState extends State<ClientProfileScreen>
   Widget _buildVisitActions(Map<String, dynamic> visit) {
     if (showDeleted) {
       return IconButton(
-        icon: Icon(Icons.restore, color: Colors.green),
+        icon: const Icon(Icons.restore_rounded, color: Color(0xFF689F38)),
         onPressed: () => _restoreVisit(visit),
+        style: IconButton.styleFrom(
+          backgroundColor: const Color(0xFF689F38).withOpacity(0.1),
+        ),
       );
     }
 
@@ -1067,23 +1348,34 @@ class _ClientProfileScreenState extends State<ClientProfileScreen>
       mainAxisSize: MainAxisSize.min,
       children: [
         IconButton(
-          icon: Icon(Icons.edit, color: Colors.teal),
+          icon: const Icon(Icons.edit_rounded, color: Color(0xFF00796B)),
           onPressed: () => _editVisit(visit),
+          style: IconButton.styleFrom(
+            backgroundColor: const Color(0xFF00796B).withOpacity(0.1),
+          ),
         ),
+        const SizedBox(width: 4),
         IconButton(
-          icon: Icon(Icons.receipt, color: Colors.blue),
+          icon: const Icon(Icons.receipt_rounded, color: Color(0xFF1976D2)),
           onPressed: () => _generateInvoice(visit),
+          style: IconButton.styleFrom(
+            backgroundColor: const Color(0xFF1976D2).withOpacity(0.1),
+          ),
         ),
+        const SizedBox(width: 4),
         IconButton(
-          icon: Icon(Icons.delete, color: Colors.red),
+          icon: const Icon(Icons.delete_rounded, color: Color(0xFFD32F2F)),
           onPressed: () => _deleteVisit(visit),
+          style: IconButton.styleFrom(
+            backgroundColor: const Color(0xFFD32F2F).withOpacity(0.1),
+          ),
         ),
       ],
     );
   }
 
   Widget _buildFloatingActionButton() {
-    return FloatingActionButton(
+    return FloatingActionButton.extended(
       onPressed: () {
         if (_tabController.index == 0) {
           _addNewPet();
@@ -1091,8 +1383,12 @@ class _ClientProfileScreenState extends State<ClientProfileScreen>
           _addNewVisit();
         }
       },
-      backgroundColor: Colors.teal,
-      child: Icon(Icons.add),
+      backgroundColor: const Color(0xFF00796B),
+      foregroundColor: Colors.white,
+      elevation: 4,
+      icon: const Icon(Icons.add_rounded),
+      label:
+          Text(_tabController.index == 0 ? 'Adaugă Animal' : 'Adaugă Vizită'),
     );
   }
 
@@ -1340,118 +1636,119 @@ class VisitDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final DateTime visitDate = DateTime.parse(visit['createdAt']);
-    final String formattedDate = "${visitDate.day}/${visitDate.month}/${visitDate.year}";
+    final String formattedDate =
+        "${visitDate.day}/${visitDate.month}/${visitDate.year}";
 
     return Scaffold(
+      backgroundColor: const Color(0xFFF5F5F5),
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'Detalii Vizită',
           style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
+            fontSize: 22,
+            fontWeight: FontWeight.w600,
           ),
         ),
-        backgroundColor: Colors.teal,
+        backgroundColor: const Color(0xFF00796B),
+        foregroundColor: Colors.white,
         elevation: 0,
       ),
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Colors.teal.shade50, Colors.teal.shade100],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
-        ),
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            children: [
-              _buildSection(
-                'Informații Vizită',
-                Icons.medical_services,
-                [
-                  _buildDetailRow('Vizita nr.:', '${visit['id']}'),
-                  _buildDetailRow('Data:', formattedDate),
-                  _buildDetailRow('Motiv Vizită:', visit['visitReason']),
-                  _buildDetailRow('Observații:', visit['observations']),
-                  _buildDetailRow('Diagnostic:', visit['diagnosis']),
-                  _buildDetailRow('Recomandări:', visit['recommendations']),
-                ],
-              ),
-              SizedBox(height: 16),
-              _buildSection(
-                'Informații Animal',
-                Icons.pets,
-                [
-                  _buildDetailRow('Nume:', visit['animal']['name']),
-                  _buildDetailRow('Specie:', visit['animal']['species']),
-                ],
-              ),
-              SizedBox(height: 16),
-              _buildSection(
-                'Tratament',
-                Icons.medication,
-                [
-                  _buildDetailRow('Nume:', visit['treatment']['name']),
-                  _buildDetailRow('Cantitate:', '${visit['treatmentQuantity']} ${visit['treatment']['unit']}'),
-                  _buildDetailRow('Preț:', '${visit['treatment']['price']} RON'),
-                ],
-              ),
-              SizedBox(height: 16),
-              _buildSection(
-                'Manopere',
-                Icons.build,
-                [
-                  ...visit['procedures'].map<Widget>((procedure) {
-                    return _buildDetailRow(
-                      procedure['name'],
-                      '${procedure['price']} RON',
-                    );
-                  }).toList(),
-                ],
-              ),
-              SizedBox(height: 16),
-              _buildSection(
-                'Informații Client',
-                Icons.person,
-                [
-                  _buildDetailRow('Nume:', '${visit['client']['firstName']} ${visit['client']['lastName']}'),
-                  _buildDetailRow('Email:', visit['client']['email']),
-                  _buildDetailRow('Telefon:', visit['client']['phone']),
-                ],
-              ),
-              SizedBox(height: 16),
-              _buildSection(
-                'Informații Administrative',
-                Icons.admin_panel_settings,
-                [
-                  _buildDetailRow('Creat de:', visit['createdBy']),
-                ],
-              ),
-              SizedBox(height: 24),
-              ElevatedButton.icon(
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            _buildSection(
+              'Informații Vizită',
+              Icons.medical_services,
+              [
+                _buildDetailRow('Vizita nr.:', '${visit['id']}'),
+                _buildDetailRow('Data:', formattedDate),
+                _buildDetailRow('Motiv Vizită:', visit['visitReason']),
+                _buildDetailRow('Observații:', visit['observations']),
+                _buildDetailRow('Diagnostic:', visit['diagnosis']),
+                _buildDetailRow('Recomandări:', visit['recommendations']),
+              ],
+            ),
+            SizedBox(height: 16),
+            _buildSection(
+              'Informații Animal',
+              Icons.pets,
+              [
+                _buildDetailRow('Nume:', visit['animal']['name']),
+                _buildDetailRow('Specie:', visit['animal']['species']),
+              ],
+            ),
+            SizedBox(height: 16),
+            _buildSection(
+              'Tratament',
+              Icons.medication,
+              [
+                _buildDetailRow('Nume:', visit['treatment']['name']),
+                _buildDetailRow('Cantitate:',
+                    '${visit['treatmentQuantity']} ${visit['treatment']['unit']}'),
+                _buildDetailRow('Preț:', '${visit['treatment']['price']} RON'),
+              ],
+            ),
+            SizedBox(height: 16),
+            _buildSection(
+              'Manopere',
+              Icons.build,
+              [
+                ...visit['procedures'].map<Widget>((procedure) {
+                  return _buildDetailRow(
+                    procedure['name'],
+                    '${procedure['price']} RON',
+                  );
+                }).toList(),
+              ],
+            ),
+            SizedBox(height: 16),
+            _buildSection(
+              'Informații Client',
+              Icons.person,
+              [
+                _buildDetailRow('Nume:',
+                    '${visit['client']['firstName']} ${visit['client']['lastName']}'),
+                _buildDetailRow('Email:', visit['client']['email']),
+                _buildDetailRow('Telefon:', visit['client']['phone']),
+              ],
+            ),
+            SizedBox(height: 16),
+            _buildSection(
+              'Informații Administrative',
+              Icons.admin_panel_settings,
+              [
+                _buildDetailRow('Creat de:', visit['createdBy']),
+              ],
+            ),
+            const SizedBox(height: 24),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
                 onPressed: () {
                   // Handle generate invoice
                 },
-                icon: Icon(Icons.receipt, color: Colors.white),
-                label: Text(
+                icon: const Icon(Icons.receipt_rounded, size: 22),
+                label: const Text(
                   'Generare Factură',
                   style: TextStyle(
                     fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.teal.shade600,
-                  padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                  backgroundColor: const Color(0xFF00796B),
+                  foregroundColor: Colors.white,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                  elevation: 2,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -1492,25 +1789,28 @@ class VisitDetailScreen extends StatelessWidget {
 
   Widget _buildDetailRow(String label, String value) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
+      padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: Colors.teal.shade800,
+          SizedBox(
+            width: 140,
+            child: Text(
+              label,
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w600,
+                color: Colors.grey.shade700,
+              ),
             ),
           ),
-          SizedBox(width: 8),
           Expanded(
             child: Text(
               value,
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.grey.shade700,
+              style: const TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w500,
+                color: Color(0xFF424242),
               ),
             ),
           ),
@@ -1594,30 +1894,24 @@ class _AnimalInfoScreenState extends State<AnimalInfoScreen> {
     }
   }
 
-@override
-Widget build(BuildContext context) {
-  return Scaffold(
-    appBar: AppBar(
-      title: Text(
-        'Informații Animal',
-        style: TextStyle(
-          fontSize: 24,
-          fontWeight: FontWeight.bold,
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFFF5F5F5),
+      appBar: AppBar(
+        title: const Text(
+          'Informații Animal',
+          style: TextStyle(
+            fontSize: 22,
+            fontWeight: FontWeight.w600,
+          ),
         ),
+        backgroundColor: const Color(0xFF00796B),
+        foregroundColor: Colors.white,
+        elevation: 0,
       ),
-      backgroundColor: Colors.teal,
-      elevation: 0,
-    ),
-    body: Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [Colors.teal.shade50, Colors.teal.shade100],
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-        ),
-      ),
-      child: SingleChildScrollView(
-        padding: EdgeInsets.all(16.0),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
           child: Column(
@@ -1626,18 +1920,24 @@ Widget build(BuildContext context) {
                 'Informații de Bază',
                 Icons.pets,
                 [
-                  _buildTextField('Nume', Icons.pets, controller: _nameController),
-                  _buildDropdownField('Specie', ['Caine', 'Pisica', 'Altceva'], _selectedSpecies, (value) {
+                  _buildTextField('Nume', Icons.pets,
+                      controller: _nameController),
+                  _buildDropdownField('Specie', ['Caine', 'Pisica', 'Altceva'],
+                      _selectedSpecies, (value) {
                     setState(() => _selectedSpecies = value);
                   }),
-                  _buildDropdownField('Rasă', ['Rasa 1', 'Rasa 2', 'Rasa 3'], _selectedBreed, (value) {
+                  _buildDropdownField(
+                      'Rasă', ['Rasa 1', 'Rasa 2', 'Rasa 3'], _selectedBreed,
+                      (value) {
                     setState(() => _selectedBreed = value);
                   }),
-                  _buildDropdownField('Gen', ['Mascul', 'Femelă'], _selectedGender, (value) {
+                  _buildDropdownField(
+                      'Gen', ['Mascul', 'Femelă'], _selectedGender, (value) {
                     setState(() => _selectedGender = value);
                   }),
                   _buildDateField(context),
-                  _buildTextField('Culoare', Icons.color_lens, controller: _colorController),
+                  _buildTextField('Culoare', Icons.color_lens,
+                      controller: _colorController),
                 ],
               ),
               SizedBox(height: 16),
@@ -1645,7 +1945,9 @@ Widget build(BuildContext context) {
                 'Detalii Medicale',
                 Icons.medical_services,
                 [
-                  _buildDropdownField('Status Reproductiv', ['Necastrat', 'Castrat'],
+                  _buildDropdownField(
+                      'Status Reproductiv',
+                      ['Necastrat', 'Castrat'],
                       _selectedReproductiveStatus, (value) {
                     setState(() => _selectedReproductiveStatus = value);
                   }),
@@ -1655,7 +1957,8 @@ Widget build(BuildContext context) {
                       isOptional: true, controller: _bloodGroupController),
                   _buildTextField('Plan de Sănătate', Icons.health_and_safety,
                       isOptional: true, controller: _healthPlanController),
-                  _buildTextField('Alerte Pacient', Icons.notification_important,
+                  _buildTextField(
+                      'Alerte Pacient', Icons.notification_important,
                       isOptional: true, controller: _patientAlertsController),
                 ],
               ),
@@ -1682,33 +1985,41 @@ Widget build(BuildContext context) {
                   _buildTextField('Poză', Icons.photo,
                       isOptional: true, controller: _photoController),
                   _buildTextField('Semne Distinctive', Icons.pets,
-                      isOptional: true, controller: _distinctiveSignsController),
+                      isOptional: true,
+                      controller: _distinctiveSignsController),
                   _buildTextField('Descriere', Icons.description,
                       controller: _descriptionController),
                   _buildTextField('Note Interne', Icons.notes,
-                      maxLines: 3, isOptional: true, controller: _internalNotesController),
+                      maxLines: 3,
+                      isOptional: true,
+                      controller: _internalNotesController),
                 ],
               ),
-              SizedBox(height: 24),
-              ElevatedButton(
-                onPressed: () async {
-                  if (_formKey.currentState!.validate()) {
-                    await _savePet();
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.teal.shade600,
-                  padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+              const SizedBox(height: 24),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () async {
+                    if (_formKey.currentState!.validate()) {
+                      await _savePet();
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF00796B),
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 32, vertical: 18),
+                    elevation: 2,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
-                ),
-                child: Text(
-                  'Salvează',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                  child: const Text(
+                    'Salvează',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
               ),
@@ -1716,42 +2027,41 @@ Widget build(BuildContext context) {
           ),
         ),
       ),
-    ),
-  );
-}
+    );
+  }
 
-Widget _buildSection(String title, IconData icon, List<Widget> children) {
-  return Card(
-    elevation: 4,
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(12),
-    ),
-    child: Padding(
-      padding: EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(icon, color: Colors.teal.shade700),
-              SizedBox(width: 8),
-              Text(
-                title,
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.teal.shade700,
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 16),
-          ...children,
-        ],
+  Widget _buildSection(String title, IconData icon, List<Widget> children) {
+    return Card(
+      elevation: 4,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
       ),
-    ),
-  );
-}
+      child: Padding(
+        padding: EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(icon, color: Colors.teal.shade700),
+                SizedBox(width: 8),
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.teal.shade700,
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 16),
+            ...children,
+          ],
+        ),
+      ),
+    );
+  }
 
   Future<void> _savePet() async {
     final url = widget.pet != null
@@ -1809,111 +2119,114 @@ Widget _buildSection(String title, IconData icon, List<Widget> children) {
   String? _selectedGender;
   String? _selectedReproductiveStatus;
 
-Widget _buildTextField(String labelText, IconData icon,
-    {int maxLines = 1, bool isOptional = false, required TextEditingController controller}) {
-  return Padding(
-    padding: const EdgeInsets.only(bottom: 16),
-    child: TextFormField(
-      controller: controller,
-      maxLines: maxLines,
-      decoration: InputDecoration(
-        labelText: labelText + (isOptional ? ' (Opțional)' : ''),
-        prefixIcon: Icon(icon, color: Colors.teal.shade600),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
+  Widget _buildTextField(String labelText, IconData icon,
+      {int maxLines = 1,
+      bool isOptional = false,
+      required TextEditingController controller}) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: TextFormField(
+        controller: controller,
+        maxLines: maxLines,
+        decoration: InputDecoration(
+          labelText: labelText + (isOptional ? ' (Opțional)' : ''),
+          prefixIcon: Icon(icon, color: Colors.teal.shade600),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+            borderSide: BorderSide(color: Colors.teal.shade200),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+            borderSide: BorderSide(color: Colors.teal.shade400, width: 2),
+          ),
+          filled: true,
+          fillColor: Colors.white,
         ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(color: Colors.teal.shade200),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(color: Colors.teal.shade400, width: 2),
-        ),
-        filled: true,
-        fillColor: Colors.white,
+        validator: (value) {
+          if (!isOptional && (value == null || value.isEmpty)) {
+            return 'Vă rugăm să introduceți $labelText';
+          }
+          return null;
+        },
       ),
-      validator: (value) {
-        if (!isOptional && (value == null || value.isEmpty)) {
-          return 'Vă rugăm să introduceți $labelText';
-        }
-        return null;
-      },
-    ),
-  );
-}
+    );
+  }
 
-Widget _buildDropdownField(String labelText, List<String> items, String? selectedValue, ValueChanged<String?> onChanged) {
-  return Padding(
-    padding: const EdgeInsets.only(bottom: 16),
-    child: DropdownButtonFormField<String>(
-      decoration: InputDecoration(
-        labelText: labelText,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
+  Widget _buildDropdownField(String labelText, List<String> items,
+      String? selectedValue, ValueChanged<String?> onChanged) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: DropdownButtonFormField<String>(
+        decoration: InputDecoration(
+          labelText: labelText,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+            borderSide: BorderSide(color: Colors.teal.shade200),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+            borderSide: BorderSide(color: Colors.teal.shade400, width: 2),
+          ),
+          filled: true,
+          fillColor: Colors.white,
         ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(color: Colors.teal.shade200),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(color: Colors.teal.shade400, width: 2),
-        ),
-        filled: true,
-        fillColor: Colors.white,
+        value: selectedValue,
+        items: items.map((String value) {
+          return DropdownMenuItem<String>(
+            value: value,
+            child: Text(value),
+          );
+        }).toList(),
+        onChanged: onChanged,
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return 'Vă rugăm să selectați $labelText';
+          }
+          return null;
+        },
       ),
-      value: selectedValue,
-      items: items.map((String value) {
-        return DropdownMenuItem<String>(
-          value: value,
-          child: Text(value),
-        );
-      }).toList(),
-      onChanged: onChanged,
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          return 'Vă rugăm să selectați $labelText';
-        }
-        return null;
-      },
-    ),
-  );
-}
+    );
+  }
 
-Widget _buildDateField(BuildContext context) {
-  return Padding(
-    padding: const EdgeInsets.only(bottom: 16),
-    child: TextFormField(
-      controller: _birthDateController,
-      readOnly: true,
-      decoration: InputDecoration(
-        labelText: 'Data Nașterii',
-        prefixIcon: Icon(Icons.calendar_today, color: Colors.teal.shade600),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
+  Widget _buildDateField(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: TextFormField(
+        controller: _birthDateController,
+        readOnly: true,
+        decoration: InputDecoration(
+          labelText: 'Data Nașterii',
+          prefixIcon: Icon(Icons.calendar_today, color: Colors.teal.shade600),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+            borderSide: BorderSide(color: Colors.teal.shade200),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+            borderSide: BorderSide(color: Colors.teal.shade400, width: 2),
+          ),
+          filled: true,
+          fillColor: Colors.white,
         ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(color: Colors.teal.shade200),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(color: Colors.teal.shade400, width: 2),
-        ),
-        filled: true,
-        fillColor: Colors.white,
+        onTap: () => _selectDate(context),
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return 'Vă rugăm să selectați data nașterii';
+          }
+          return null;
+        },
       ),
-      onTap: () => _selectDate(context),
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          return 'Vă rugăm să selectați data nașterii';
-        }
-        return null;
-      },
-    ),
-  );
-}
+    );
+  }
 
   Future<void> _selectDate(BuildContext context) async {
     DateTime? picked = await showDatePicker(
@@ -2068,76 +2381,72 @@ class _VisitInfoScreenState extends State<VisitInfoScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFF5F5F5),
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'Informații Vizită',
           style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
+            fontSize: 22,
+            fontWeight: FontWeight.w600,
           ),
         ),
-        backgroundColor: Colors.teal,
+        backgroundColor: const Color(0xFF00796B),
+        foregroundColor: Colors.white,
         elevation: 0,
       ),
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Colors.teal.shade50, Colors.teal.shade100],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
-        ),
-        child: SingleChildScrollView(
-          padding: EdgeInsets.all(16.0),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                _buildSection(
-                  'Detalii Vizită',
-                  Icons.medical_services,
-                  [
-                    _buildTextField('Motiv Vizită', Icons.medical_services,
-                        controller: _visitReasonController),
-                    _buildTextField('Observații', Icons.note,
-                        maxLines: 3, controller: _observationsController),
-                    _buildTextField('Diagnostic', Icons.assignment,
-                        controller: _diagnosisController),
-                    _buildTextField('Recomandări', Icons.recommend,
-                        maxLines: 3, controller: _recommendationsController),
-                  ],
-                ),
-                SizedBox(height: 16),
-                _buildSection(
-                  'Animal și Tratament',
-                  Icons.pets,
-                  [
-                    if (showAnimalDropdown) _buildAnimalDropdownField(),
-                    _buildTreatmentDropdownField(),
-                  ],
-                ),
-                SizedBox(height: 16),
-                _buildSection(
-                  'Manopere',
-                  Icons.build,
-                  [
-                    _buildMultiSelectDropdownField('Manopere', procedures,
-                        (value) {
-                      setState(() {
-                        if (_selectedProcedures.contains(value)) {
-                          _selectedProcedures.remove(value);
-                        } else {
-                          if (value != null) {
-                            _selectedProcedures.add(value);
-                          }
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16.0),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              _buildSection(
+                'Detalii Vizită',
+                Icons.medical_services,
+                [
+                  _buildTextField('Motiv Vizită', Icons.medical_services,
+                      controller: _visitReasonController),
+                  _buildTextField('Observații', Icons.note,
+                      maxLines: 3, controller: _observationsController),
+                  _buildTextField('Diagnostic', Icons.assignment,
+                      controller: _diagnosisController),
+                  _buildTextField('Recomandări', Icons.recommend,
+                      maxLines: 3, controller: _recommendationsController),
+                ],
+              ),
+              SizedBox(height: 16),
+              _buildSection(
+                'Animal și Tratament',
+                Icons.pets,
+                [
+                  if (showAnimalDropdown) _buildAnimalDropdownField(),
+                  _buildTreatmentDropdownField(),
+                ],
+              ),
+              SizedBox(height: 16),
+              _buildSection(
+                'Manopere',
+                Icons.build,
+                [
+                  _buildMultiSelectDropdownField('Manopere', procedures,
+                      (value) {
+                    setState(() {
+                      if (_selectedProcedures.contains(value)) {
+                        _selectedProcedures.remove(value);
+                      } else {
+                        if (value != null) {
+                          _selectedProcedures.add(value);
                         }
-                      });
-                    }),
-                  ],
-                ),
-                SizedBox(height: 24),
-                ElevatedButton(
+                      }
+                    });
+                  }),
+                ],
+              ),
+              const SizedBox(height: 24),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
                   onPressed: () async {
                     if (_formKey.currentState!.validate()) {
                       await _saveVisit();
@@ -2145,23 +2454,24 @@ class _VisitInfoScreenState extends State<VisitInfoScreen> {
                     }
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.teal.shade600,
-                    padding: EdgeInsets.symmetric(vertical: 16),
+                    backgroundColor: const Color(0xFF00796B),
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 18),
+                    elevation: 2,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child: Text(
+                  child: const Text(
                     'Salvează',
                     style: TextStyle(
                       fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
@@ -2317,13 +2627,14 @@ class _VisitInfoScreenState extends State<VisitInfoScreen> {
         onChanged: (selectedId) {
           if (selectedId != null) {
             setState(() {
-            final selectedAnimal = animals.firstWhere((animal) => animal['id'] == selectedId);
-            _selectedAnimal = {
-              'id': selectedAnimal['id'],
-              'name': selectedAnimal['name'],
-              'species': selectedAnimal['species'],
-            };
-          });
+              final selectedAnimal =
+                  animals.firstWhere((animal) => animal['id'] == selectedId);
+              _selectedAnimal = {
+                'id': selectedAnimal['id'],
+                'name': selectedAnimal['name'],
+                'species': selectedAnimal['species'],
+              };
+            });
           }
         },
         validator: (value) {
@@ -2693,73 +3004,69 @@ class EditClientScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFF5F5F5),
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'Editare Client',
           style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
+            fontSize: 22,
+            fontWeight: FontWeight.w600,
           ),
         ),
-        backgroundColor: Colors.teal,
+        backgroundColor: const Color(0xFF00796B),
+        foregroundColor: Colors.white,
         elevation: 0,
       ),
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Colors.teal.shade50, Colors.teal.shade100],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
-        ),
-        child: SingleChildScrollView(
-          padding: EdgeInsets.all(16.0),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              children: [
-                _buildSection(
-                  'Informații Personale',
-                  Icons.person,
-                  [
-                    _buildTextField('Prenume', Icons.person_outline,
-                        controller: _firstNameController),
-                    _buildTextField('Nume', Icons.person_outline,
-                        controller: _lastNameController),
-                    _buildTextField('Email', Icons.email,
-                        controller: _emailController),
-                    _buildPhoneField(),
-                  ],
-                ),
-                SizedBox(height: 16),
-                _buildSection(
-                  'Documente',
-                  Icons.document_scanner,
-                  [
-                    _buildTextField('CNP', Icons.credit_card,
-                        isOptional: true, controller: _personalIdController),
-                    _buildTextField('Serie/Număr CI', Icons.badge,
-                        isOptional: true, controller: _identityCardController),
-                  ],
-                ),
-                SizedBox(height: 16),
-                _buildSection(
-                  'Detalii Adiționale',
-                  Icons.more_horiz,
-                  [
-                    _buildTextField('Adresă', Icons.home,
-                        isOptional: true, controller: _addressController),
-                    _buildDateField(
-                        context, 'Data Nașterii', Icons.calendar_today,
-                        isOptional: true, controller: _birthDateController),
-                    _buildTextField('Note', Icons.note,
-                        maxLines: 3,
-                        isOptional: true,
-                        controller: _notesController),
-                  ],
-                ),
-                SizedBox(height: 24),
-                ElevatedButton(
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16.0),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            children: [
+              _buildSection(
+                'Informații Personale',
+                Icons.person,
+                [
+                  _buildTextField('Prenume', Icons.person_outline,
+                      controller: _firstNameController),
+                  _buildTextField('Nume', Icons.person_outline,
+                      controller: _lastNameController),
+                  _buildTextField('Email', Icons.email,
+                      controller: _emailController),
+                  _buildPhoneField(),
+                ],
+              ),
+              SizedBox(height: 16),
+              _buildSection(
+                'Documente',
+                Icons.document_scanner,
+                [
+                  _buildTextField('CNP', Icons.credit_card,
+                      isOptional: true, controller: _personalIdController),
+                  _buildTextField('Serie/Număr CI', Icons.badge,
+                      isOptional: true, controller: _identityCardController),
+                ],
+              ),
+              SizedBox(height: 16),
+              _buildSection(
+                'Detalii Adiționale',
+                Icons.more_horiz,
+                [
+                  _buildTextField('Adresă', Icons.home,
+                      isOptional: true, controller: _addressController),
+                  _buildDateField(
+                      context, 'Data Nașterii', Icons.calendar_today,
+                      isOptional: true, controller: _birthDateController),
+                  _buildTextField('Note', Icons.note,
+                      maxLines: 3,
+                      isOptional: true,
+                      controller: _notesController),
+                ],
+              ),
+              const SizedBox(height: 24),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
                   onPressed: () async {
                     if (_formKey.currentState!.validate()) {
                       final updatedClient = await _updateClient();
@@ -2769,23 +3076,25 @@ class EditClientScreen extends StatelessWidget {
                     }
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.teal.shade600,
-                    padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                    backgroundColor: const Color(0xFF00796B),
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 32, vertical: 18),
+                    elevation: 2,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child: Text(
+                  child: const Text(
                     'Salvează',
                     style: TextStyle(
                       fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),

@@ -11,6 +11,7 @@ const register = async (req, res) => {
     firstName,
     middleName,
     lastName,
+    userType,
     cabinetId,
   } = req.body;
 
@@ -28,10 +29,21 @@ const register = async (req, res) => {
     if (existingEmail) {
       return res.status(400).json({ message: "Email already exists" });
     }
-    // Check if cabinetId exists
-    const cabinet = await Cabinet.findByPk(cabinetId);
-    if (!cabinet) {
+    
+    // Validate userType
+    if (!userType || !['doctor', 'client'].includes(userType)) {
+      return res.status(400).json({ message: "Invalid user type. Must be 'doctor' or 'client'" });
+    }
+    
+    // Check if cabinetId exists (only required for doctors)
+    if (userType === 'doctor') {
+      if (!cabinetId) {
+        return res.status(400).json({ message: "Cabinet selection is required for doctors" });
+      }
+      const cabinet = await Cabinet.findByPk(cabinetId);
+      if (!cabinet) {
         return res.status(400).json({ message: "Invalid cabinetId" });
+      }
     }
     // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -44,13 +56,19 @@ const register = async (req, res) => {
       firstName,
       middleName,
       lastName,
-      cabinetId,
+      userType,
+      cabinetId: userType === 'doctor' ? cabinetId : null,
       photo,
     });
 
     // Generate JWT token
     const token = jwt.sign(
-      { id: newUser.id, username: newUser.username },
+      { 
+        id: newUser.id, 
+        username: newUser.username, 
+        userType: newUser.userType,
+        cabinetId: newUser.cabinetId 
+      },
       process.env.JWT_SECRET,
       { expiresIn: "1h" }
     );
@@ -85,7 +103,13 @@ const login = async (req, res) => {
 
     // Generate JWT token
     const token = jwt.sign(
-      { id: user.id, username: user.username, cabinetId: user.cabinetId, createdBy: user.createdBy },
+      { 
+        id: user.id, 
+        username: user.username, 
+        userType: user.userType,
+        cabinetId: user.cabinetId, 
+        createdBy: user.createdBy 
+      },
       process.env.JWT_SECRET,
       { expiresIn: "1h" }
     );

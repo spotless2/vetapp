@@ -29,13 +29,20 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             allowNull: false
         },
+        userType: {
+            type: DataTypes.ENUM('doctor', 'client'),
+            allowNull: false,
+            defaultValue: 'client'
+        },
         cabinetId: {
             type: DataTypes.INTEGER,
-            allowNull: false,
+            allowNull: true,
             references: {
                 model: 'Cabinets',
                 key: 'id'
-            }
+            },
+            onDelete: 'SET NULL',
+            onUpdate: 'CASCADE'
         },
         photo: {
             type: DataTypes.STRING,

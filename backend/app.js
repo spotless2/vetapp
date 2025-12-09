@@ -49,8 +49,18 @@ app.get('/', (req, res) => {
     res.send('Hello World!');
 });
 
+// NOTE: If you encounter foreign key errors after adding userType field,
+// run these SQL commands manually:
+// SET FOREIGN_KEY_CHECKS=0;
+// ALTER TABLE Users MODIFY cabinetId INT NULL;
+// ALTER TABLE Users ADD COLUMN IF NOT EXISTS userType ENUM('doctor', 'client') NOT NULL DEFAULT 'doctor' AFTER lastName;
+// UPDATE Users SET userType = 'doctor' WHERE cabinetId IS NOT NULL;
+// SET FOREIGN_KEY_CHECKS=1;
+
 sequelize.sync().then(() => {
     app.listen(port, () => {
         console.log(`Server is running on http://localhost:${port}`);
     });
+}).catch(err => {
+    console.error('Error synchronizing database:', err);
 });
