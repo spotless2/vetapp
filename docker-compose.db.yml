@@ -11,7 +11,7 @@ services:
       MYSQL_USER: ${MYSQL_USER:-vetuser}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD:-vetpassword}
     ports:
-      - "3306:3306"
+      - "3307:3306"
     volumes:
       - mysql_data:/var/lib/mysql
     healthcheck:
