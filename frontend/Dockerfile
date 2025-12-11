@@ -3,6 +3,9 @@ FROM ghcr.io/cirruslabs/flutter:stable AS build
 
 WORKDIR /app
 
+# Enable web support
+RUN flutter config --enable-web
+
 # Copy pubspec files
 COPY pubspec.* ./
 
@@ -14,7 +17,7 @@ COPY . .
 
 # Build web app with API_URL variable
 ARG API_URL=http://localhost:3000
-RUN flutter build web --release --dart-define=API_URL=$API_URL
+RUN flutter build web --release --dart-define=API_URL=$API_URL --no-tree-shake-icons
 
 # Stage 2: Serve with nginx
 FROM nginx:alpine
