@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:intl/intl.dart';
+import 'config/api_config.dart';
 
 class InventoryPage extends StatefulWidget {
   final Map<String, dynamic> user;
@@ -59,7 +60,7 @@ class _InventoryPageState extends State<InventoryPage> {
     try {
       print('📦 Loading products for cabinet: ${widget.user['cabinetId']}');
       final response = await http.get(
-        Uri.parse('http://localhost:3000/products/cabinet/${widget.user['cabinetId']}'),
+        Uri.parse('${ApiConfig.baseUrl}/products/cabinet/${widget.user['cabinetId']}'),
       );
 
       print('Response status: ${response.statusCode}');
@@ -88,7 +89,7 @@ class _InventoryPageState extends State<InventoryPage> {
   Future<void> _loadStats() async {
     try {
       final response = await http.get(
-        Uri.parse('http://localhost:3000/products/cabinet/${widget.user['cabinetId']}/stats'),
+        Uri.parse('${ApiConfig.baseUrl}/products/cabinet/${widget.user['cabinetId']}/stats'),
       );
 
       if (response.statusCode == 200) {
@@ -198,7 +199,7 @@ class _InventoryPageState extends State<InventoryPage> {
     try {
       print('🗑️ Bulk deleting products: $_selectedProductIds');
       final response = await http.post(
-        Uri.parse('http://localhost:3000/products/bulk-delete'),
+        Uri.parse('${ApiConfig.baseUrl}/products/bulk-delete'),
         headers: {'Content-Type': 'application/json'},
         body: json.encode({'ids': _selectedProductIds.toList()}),
       );
@@ -249,7 +250,7 @@ class _InventoryPageState extends State<InventoryPage> {
     try {
       print('🗑️ Deleting product: $productId');
       final response = await http.delete(
-        Uri.parse('http://localhost:3000/products/$productId'),
+        Uri.parse('${ApiConfig.baseUrl}/products/$productId'),
       );
 
       if (response.statusCode == 200) {
@@ -634,12 +635,12 @@ class _InventoryPageState extends State<InventoryPage> {
                   print('${isEdit ? '🔄 Updating' : '📝 Creating'} product: $productData');
                   final response = isEdit
                       ? await http.put(
-                          Uri.parse('http://localhost:3000/products/${product['id']}'),
+                          Uri.parse('${ApiConfig.baseUrl}/products/${product['id']}'),
                           headers: {'Content-Type': 'application/json'},
                           body: json.encode(productData),
                         )
                       : await http.post(
-                          Uri.parse('http://localhost:3000/products'),
+                          Uri.parse('${ApiConfig.baseUrl}/products'),
                           headers: {'Content-Type': 'application/json'},
                           body: json.encode(productData),
                         );
@@ -733,7 +734,7 @@ class _InventoryPageState extends State<InventoryPage> {
                 try {
                   print('➕ Updating quantity for product ${product['id']}: $operation $quantity');
                   final response = await http.put(
-                    Uri.parse('http://localhost:3000/products/${product['id']}/quantity'),
+                    Uri.parse('${ApiConfig.baseUrl}/products/${product['id']}/quantity'),
                     headers: {'Content-Type': 'application/json'},
                     body: json.encode({
                       'quantity': quantity,

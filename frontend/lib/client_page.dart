@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'config/api_config.dart';
 
 class ClientPage extends StatefulWidget {
   final Map<String, dynamic> user;
@@ -572,7 +573,7 @@ class _NewClientScreenState extends State<NewClientScreen> {
 
     try {
       final response = await http.post(
-        Uri.parse('http://localhost:3000/clients'),
+        Uri.parse('${ApiConfig.baseUrl}/clients'),
         headers: {'Content-Type': 'application/json; charset=UTF-8'},
         body: jsonEncode(clientData),
       );
@@ -626,7 +627,7 @@ class _ExistingClientScreenState extends State<ExistingClientScreen> {
 
     try {
       final response =
-          await http.get(Uri.parse('http://localhost:3000/clients/$cabinetId'));
+          await http.get(Uri.parse('${ApiConfig.baseUrl}/clients/$cabinetId'));
 
       if (response.statusCode == 200) {
         setState(() {
@@ -884,7 +885,7 @@ class _ClientProfileScreenState extends State<ClientProfileScreen>
   Future<void> _fetchPets() async {
     try {
       final response = await http.get(Uri.parse(
-          'http://localhost:3000/pets/client/${widget.client['id']}'));
+          '${ApiConfig.baseUrl}/pets/client/${widget.client['id']}'));
 
       if (response.statusCode == 200) {
         setState(() => pets = jsonDecode(response.body));
@@ -899,7 +900,7 @@ class _ClientProfileScreenState extends State<ClientProfileScreen>
   Future<void> _fetchVisits() async {
     try {
       final response = await http.get(Uri.parse(
-          'http://localhost:3000/visits/client/${widget.client['id']}?includeDeleted=$showDeleted'));
+          '${ApiConfig.baseUrl}/visits/client/${widget.client['id']}?includeDeleted=$showDeleted'));
 
       if (response.statusCode == 200) {
         setState(() => visits = jsonDecode(response.body));
@@ -1457,7 +1458,7 @@ class _ClientProfileScreenState extends State<ClientProfileScreen>
     if (confirmDelete == true) {
       try {
         final response = await http.delete(
-          Uri.parse('http://localhost:3000/pets/${pet['id']}'),
+          Uri.parse('${ApiConfig.baseUrl}/pets/${pet['id']}'),
           headers: {'Content-Type': 'application/json; charset=UTF-8'},
         );
 
@@ -1542,8 +1543,8 @@ class _ClientProfileScreenState extends State<ClientProfileScreen>
     if (confirmDelete == true) {
       try {
         final String apiUrl = showDeleted
-            ? 'http://localhost:3000/visits/final/${visit['id']}'
-            : 'http://localhost:3000/visits/soft/${visit['id']}';
+            ? '${ApiConfig.baseUrl}/visits/final/${visit['id']}'
+            : '${ApiConfig.baseUrl}/visits/soft/${visit['id']}';
 
         final response = await http.delete(
           Uri.parse(apiUrl),
@@ -1577,7 +1578,7 @@ class _ClientProfileScreenState extends State<ClientProfileScreen>
   void _restoreVisit(Map<String, dynamic> visit) async {
     try {
       final response = await http.put(
-        Uri.parse('http://localhost:3000/visits/${visit['id']}'),
+        Uri.parse('${ApiConfig.baseUrl}/visits/${visit['id']}'),
         headers: {'Content-Type': 'application/json; charset=UTF-8'},
         body: jsonEncode({
           ...visit,
@@ -2065,8 +2066,8 @@ class _AnimalInfoScreenState extends State<AnimalInfoScreen> {
 
   Future<void> _savePet() async {
     final url = widget.pet != null
-        ? 'http://localhost:3000/pets/${widget.pet!['id']}'
-        : 'http://localhost:3000/pets';
+        ? '${ApiConfig.baseUrl}/pets/${widget.pet!['id']}'
+        : '${ApiConfig.baseUrl}/pets';
 
     final requestBody = <String, dynamic>{
       'clientId': widget.client['id'], // Add the clientId
@@ -2297,7 +2298,7 @@ class _VisitInfoScreenState extends State<VisitInfoScreen> {
   Future<void> _fetchAnimals() async {
     final clientId =
         widget.client['id']; // Assuming client ID is available in widget.client
-    final url = 'http://localhost:3000/pets/client/$clientId';
+    final url = '${ApiConfig.baseUrl}/pets/client/$clientId';
 
     try {
       final response = await http.get(Uri.parse(url));
@@ -2513,8 +2514,8 @@ class _VisitInfoScreenState extends State<VisitInfoScreen> {
 
   Future<void> _saveVisit() async {
     final url = widget.visit != null
-        ? 'http://localhost:3000/visits/${widget.visit!['id']}'
-        : 'http://localhost:3000/visits';
+        ? '${ApiConfig.baseUrl}/visits/${widget.visit!['id']}'
+        : '${ApiConfig.baseUrl}/visits';
 
     final requestBody = <String, dynamic>{
       'visitReason': _visitReasonController.text,
@@ -3248,7 +3249,7 @@ class EditClientScreen extends StatelessWidget {
     }
 
     final response = await http.put(
-      Uri.parse('http://localhost:3000/clients/$updatedBy'),
+      Uri.parse('${ApiConfig.baseUrl}/clients/$updatedBy'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },

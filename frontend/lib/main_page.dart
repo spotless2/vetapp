@@ -8,6 +8,7 @@ import 'inventory_page.dart';
 import 'registry_page.dart';
 import 'scheduling_page.dart';
 import 'calendar_page.dart';
+import 'config/api_config.dart';
 import 'import_page.dart';
 import 'login_page.dart';
 import 'edit_profile_page.dart';
@@ -53,7 +54,7 @@ class _MainPageState extends State<MainPage>
   Future<void> _fetchUserDetails() async {
     final userId = widget.user['id'].toString();
     final response =
-        await http.get(Uri.parse('http://localhost:3000/users/$userId'));
+        await http.get(Uri.parse('${ApiConfig.baseUrl}/users/$userId'));
 
     if (response.statusCode == 200) {
       final responseBody = jsonDecode(response.body);
@@ -189,8 +190,8 @@ class _MainPageState extends State<MainPage>
                   ),
                   child: CircleAvatar(
                     radius: 50,
-                    backgroundImage: NetworkImage(
-                        'http://localhost:3000${userDetails['photo']}'),
+                      backgroundImage: NetworkImage(
+                        '${ApiConfig.baseUrl}${userDetails['photo']}'),
                     backgroundColor: Colors.white,
                   ),
                 ),
@@ -262,8 +263,8 @@ class _MainPageState extends State<MainPage>
         children: [
           CircleAvatar(
             radius: 40,
-            backgroundImage:
-                NetworkImage('http://localhost:3000${userDetails['photo']}'),
+              backgroundImage:
+                NetworkImage('${ApiConfig.baseUrl}${userDetails['photo']}'),
             backgroundColor: Colors.white,
           ),
           const SizedBox(height: 12),

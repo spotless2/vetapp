@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'config/api_config.dart';
 
 class SchedulingPage extends StatefulWidget {
   final Map<String, dynamic>? user;
@@ -34,7 +35,7 @@ class _SchedulingPageState extends State<SchedulingPage> {
     try {
       final cabinetId = widget.user!['cabinetId'].toString();
       final response = await http.get(
-        Uri.parse('http://localhost:3000/cabinets/$cabinetId'),
+        Uri.parse('${ApiConfig.baseUrl}/cabinets/$cabinetId'),
       );
 
       if (response.statusCode == 200) {
@@ -72,7 +73,7 @@ class _SchedulingPageState extends State<SchedulingPage> {
 
       final response = await http.get(
         Uri.parse(
-          'http://localhost:3000/appointments/cabinet/$cabinetId?startDate=${startDate.toIso8601String()}&endDate=${endDate.toIso8601String()}',
+          '${ApiConfig.baseUrl}/appointments/cabinet/$cabinetId?startDate=${startDate.toIso8601String()}&endDate=${endDate.toIso8601String()}',
         ),
       );
 
@@ -1211,7 +1212,7 @@ class _SchedulingPageState extends State<SchedulingPage> {
 
     try {
       final response = await http.post(
-        Uri.parse('http://localhost:3000/appointments'),
+        Uri.parse('${ApiConfig.baseUrl}/appointments'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode(requestBody),
       );
@@ -1247,7 +1248,7 @@ class _SchedulingPageState extends State<SchedulingPage> {
   }) async {
     try {
       final response = await http.put(
-        Uri.parse('http://localhost:3000/appointments/$appointmentId'),
+        Uri.parse('${ApiConfig.baseUrl}/appointments/$appointmentId'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'title': title,
@@ -1300,7 +1301,7 @@ class _SchedulingPageState extends State<SchedulingPage> {
 
     try {
       final response = await http.delete(
-        Uri.parse('http://localhost:3000/appointments/$appointmentId'),
+        Uri.parse('${ApiConfig.baseUrl}/appointments/$appointmentId'),
       );
 
       if (response.statusCode == 200) {

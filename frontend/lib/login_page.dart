@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
+import 'config/api_config.dart';
 
 import 'main_page.dart';
 import 'register_page.dart';
@@ -30,7 +31,7 @@ class _LoginPageState extends State<LoginPage>
 
     try {
       final response = await http.post(
-        Uri.parse('http://localhost:3000/auth/login'),
+        Uri.parse('${ApiConfig.baseUrl}/auth/login'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },

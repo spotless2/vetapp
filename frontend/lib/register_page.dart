@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'login_page.dart';
+import 'config/api_config.dart';
 
 class RegisterPage extends StatefulWidget {
   @override
@@ -45,10 +46,8 @@ class _RegisterPageState extends State<RegisterPage>
   }
 
   Future<void> fetchCabinets() async {
-    final response =
-        await http.get(Uri.parse('http://localhost:3000/cabinets'));
-
-    if (response.statusCode == 200) {
+      final response =
+        await http.get(Uri.parse('${ApiConfig.baseUrl}/cabinets'));    if (response.statusCode == 200) {
       setState(() {
         cabinets = jsonDecode(response.body);
       });
@@ -98,8 +97,8 @@ class _RegisterPageState extends State<RegisterPage>
     setState(() => _isLoading = true);
 
     try {
-      final request = http.MultipartRequest(
-          'POST', Uri.parse('http://localhost:3000/auth/register'));
+      var request = http.MultipartRequest(
+          'POST', Uri.parse('${ApiConfig.baseUrl}/auth/register'));
 
       request.fields['username'] = usernameController.text.trim();
       request.fields['password'] = passwordController.text;

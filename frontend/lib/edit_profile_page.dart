@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'config/api_config.dart';
 
 class EditProfilePage extends StatefulWidget {
   final Map<String, dynamic> userDetails;
@@ -46,7 +47,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
       print('🔄 Updating user profile: ${widget.userDetails['id']}');
       
       final response = await http.put(
-        Uri.parse('http://localhost:3000/users/${widget.userDetails['id']}'),
+        Uri.parse('${ApiConfig.baseUrl}/users/${widget.userDetails['id']}'),
         headers: {'Content-Type': 'application/json'},
         body: json.encode({
           'username': usernameController.text.trim(),

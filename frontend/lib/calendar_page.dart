@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:table_calendar/table_calendar.dart';
+import 'config/api_config.dart';
 
 class CalendarPage extends StatefulWidget {
   final Map<String, dynamic>? user;
@@ -37,7 +38,7 @@ class _CalendarPageState extends State<CalendarPage> {
     try {
       final cabinetId = widget.user!['cabinetId'].toString();
       final response = await http.get(
-        Uri.parse('http://localhost:3000/cabinets/$cabinetId'),
+        Uri.parse('${ApiConfig.baseUrl}/cabinets/$cabinetId'),
       );
 
       if (response.statusCode == 200) {
@@ -79,7 +80,7 @@ class _CalendarPageState extends State<CalendarPage> {
 
       final response = await http.get(
         Uri.parse(
-          'http://localhost:3000/appointments/cabinet/$cabinetId?startDate=${startDate.toIso8601String()}&endDate=${endDate.toIso8601String()}',
+          '${ApiConfig.baseUrl}/appointments/cabinet/$cabinetId?startDate=${startDate.toIso8601String()}&endDate=${endDate.toIso8601String()}',
         ),
       );
 
@@ -1243,7 +1244,7 @@ class _CalendarPageState extends State<CalendarPage> {
 
     try {
       final response = await http.post(
-        Uri.parse('http://localhost:3000/appointments'),
+        Uri.parse('${ApiConfig.baseUrl}/appointments'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode(requestBody),
       );
@@ -1281,7 +1282,7 @@ class _CalendarPageState extends State<CalendarPage> {
   }) async {
     try {
       final response = await http.put(
-        Uri.parse('http://localhost:3000/appointments/$appointmentId'),
+        Uri.parse('${ApiConfig.baseUrl}/appointments/$appointmentId'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'title': title,
@@ -1334,7 +1335,7 @@ class _CalendarPageState extends State<CalendarPage> {
 
     try {
       final response = await http.delete(
-        Uri.parse('http://localhost:3000/appointments/$appointmentId'),
+        Uri.parse('${ApiConfig.baseUrl}/appointments/$appointmentId'),
       );
 
       if (response.statusCode == 200) {
