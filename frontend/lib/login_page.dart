@@ -43,11 +43,12 @@ class _LoginPageState extends State<LoginPage>
       if (response.statusCode == 200) {
         final responseBody = jsonDecode(response.body);
         final token = responseBody['token'];
-        Navigator.pushReplacement(
+        Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(
               builder: (context) => MainPage(
                   user: JWT.decode(token).payload as Map<String, dynamic>)),
+          (route) => false,
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -234,6 +235,7 @@ class _LoginPageState extends State<LoginPage>
                                   }
                                   return null;
                                 },
+                                onFieldSubmitted: (_) => login(context),
                               ),
                               const SizedBox(height: 32),
                               MouseRegion(
@@ -337,11 +339,13 @@ class _LoginPageState extends State<LoginPage>
     bool obscureText = false,
     Widget? suffixIcon,
     String? Function(String?)? validator,
+    void Function(String)? onFieldSubmitted,
   }) {
     return TextFormField(
       controller: controller,
       obscureText: obscureText,
       validator: validator,
+      onFieldSubmitted: onFieldSubmitted,
       style: const TextStyle(fontSize: 16),
       decoration: InputDecoration(
         labelText: labelText,

@@ -1,23 +1,110 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
-class EditProfilePage extends StatelessWidget {
+class EditProfilePage extends StatefulWidget {
   final Map<String, dynamic> userDetails;
 
   EditProfilePage({required this.userDetails});
 
   @override
-  Widget build(BuildContext context) {
-    final TextEditingController usernameController =
-        TextEditingController(text: userDetails['username']);
-    final TextEditingController emailController =
-        TextEditingController(text: userDetails['email']);
-    final TextEditingController firstNameController =
-        TextEditingController(text: userDetails['firstName']);
-    final TextEditingController middleNameController =
-        TextEditingController(text: userDetails['middleName']);
-    final TextEditingController lastNameController =
-        TextEditingController(text: userDetails['lastName']);
+  _EditProfilePageState createState() => _EditProfilePageState();
+}
 
+class _EditProfilePageState extends State<EditProfilePage> {
+  late TextEditingController usernameController;
+  late TextEditingController emailController;
+  late TextEditingController firstNameController;
+  late TextEditingController middleNameController;
+  late TextEditingController lastNameController;
+  bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    usernameController = TextEditingController(text: widget.userDetails['username']);
+    emailController = TextEditingController(text: widget.userDetails['email']);
+    firstNameController = TextEditingController(text: widget.userDetails['firstName']);
+    middleNameController = TextEditingController(text: widget.userDetails['middleName']);
+    lastNameController = TextEditingController(text: widget.userDetails['lastName']);
+  }
+
+  @override
+  void dispose() {
+    usernameController.dispose();
+    emailController.dispose();
+    firstNameController.dispose();
+    middleNameController.dispose();
+    lastNameController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _saveProfile() async {
+    setState(() => _isLoading = true);
+
+    try {
+      print('🔄 Updating user profile: ${widget.userDetails['id']}');
+      
+      final response = await http.put(
+        Uri.parse('http://localhost:3000/users/${widget.userDetails['id']}'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({
+          'username': usernameController.text.trim(),
+          'email': emailController.text.trim(),
+          'firstName': firstNameController.text.trim(),
+          'middleName': middleNameController.text.trim(),
+          'lastName': lastNameController.text.trim(),
+        }),
+      );
+
+      print('Response: ${response.statusCode} - ${response.body}');
+
+      if (response.statusCode == 200) {
+        final updatedUser = json.decode(response.body);
+        
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                Icon(Icons.check_circle_outline, color: Colors.white),
+                SizedBox(width: 12),
+                Expanded(child: Text('Modificări salvate cu succes!')),
+              ],
+            ),
+            backgroundColor: Colors.green.shade600,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          ),
+        );
+
+        // Return updated user data back to main page
+        Navigator.pop(context, updatedUser);
+      } else {
+        throw Exception('Failed to update profile');
+      }
+    } catch (e) {
+      print('❌ Error updating profile: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Row(
+            children: [
+              Icon(Icons.error_outline, color: Colors.white),
+              SizedBox(width: 12),
+              Expanded(child: Text('Eroare la salvarea modificărilor: $e')),
+            ],
+          ),
+          backgroundColor: Colors.red.shade600,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        ),
+      );
+    } finally {
+      setState(() => _isLoading = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F5),
       appBar: AppBar(
@@ -112,25 +199,7 @@ class EditProfilePage extends StatelessWidget {
             ),
             child: SafeArea(
               child: ElevatedButton(
-                onPressed: () {
-                  // Handle save
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Row(
-                        children: [
-                          Icon(Icons.check_circle_outline, color: Colors.white),
-                          SizedBox(width: 12),
-                          Expanded(
-                              child: Text('Modificări salvate cu succes!')),
-                        ],
-                      ),
-                      backgroundColor: Colors.green.shade600,
-                      behavior: SnackBarBehavior.floating,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10)),
-                    ),
-                  );
-                },
+                onPressed: _isLoading ? null : _saveProfile,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF00796B),
                   minimumSize: const Size(double.infinity, 56),
@@ -139,15 +208,24 @@ class EditProfilePage extends StatelessWidget {
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-                child: const Text(
-                  'Salvează Modificările',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white,
-                    letterSpacing: 0.5,
-                  ),
-                ),
+                child: _isLoading
+                    ? const SizedBox(
+                        height: 24,
+                        width: 24,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                        ),
+                      )
+                    : const Text(
+                        'Salvează Modificările',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
               ),
             ),
           ),

@@ -53,7 +53,7 @@ module.exports = (sequelize, DataTypes) => {
     });
 
     User.associate = models => {
-        User.belongsTo(models.Cabinet, { foreignKey: 'cabinetId' });
+        User.belongsTo(models.Cabinet, { foreignKey: 'cabinetId', as: 'Cabinet' });
         User.hasMany(models.Client, { foreignKey: 'createdBy' });
     };
 

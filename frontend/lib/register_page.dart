@@ -22,7 +22,6 @@ class _RegisterPageState extends State<RegisterPage>
 
   List<dynamic> cabinets = [];
   String? selectedCabinetId;
-  String? selectedUserType;
   File? _image;
   late AnimationController _controller;
   late Animation<double> _animation;
@@ -77,27 +76,7 @@ class _RegisterPageState extends State<RegisterPage>
       return;
     }
 
-    if (selectedUserType == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Row(
-            children: [
-              Icon(Icons.error_outline, color: Colors.white),
-              SizedBox(width: 12),
-              Expanded(
-                  child: Text('Vă rugăm să selectați tipul de utilizator')),
-            ],
-          ),
-          backgroundColor: Colors.orange.shade600,
-          behavior: SnackBarBehavior.floating,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        ),
-      );
-      return;
-    }
-
-    if (selectedUserType == 'doctor' && selectedCabinetId == null) {
+    if (selectedCabinetId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Row(
@@ -128,11 +107,8 @@ class _RegisterPageState extends State<RegisterPage>
       request.fields['firstName'] = firstNameController.text.trim();
       request.fields['middleName'] = middleNameController.text.trim();
       request.fields['lastName'] = lastNameController.text.trim();
-      request.fields['userType'] = selectedUserType!;
-
-      if (selectedUserType == 'doctor' && selectedCabinetId != null) {
-        request.fields['cabinetId'] = selectedCabinetId!;
-      }
+      request.fields['userType'] = 'doctor';
+      request.fields['cabinetId'] = selectedCabinetId!;
 
       if (_image != null) {
         request.files
@@ -335,14 +311,11 @@ class _RegisterPageState extends State<RegisterPage>
                                   Icons.badge_outlined,
                                   validator: (v) => v?.trim().isEmpty ?? true
                                       ? 'Câmp obligatoriu'
-                                      : null),
+                                      : null,
+                                  onFieldSubmitted: (_) => register()),
                               const SizedBox(height: 16),
-                              _buildUserTypeField(),
+                              _buildCabinetDropdownField(),
                               const SizedBox(height: 16),
-                              if (selectedUserType == 'doctor') ...[
-                                _buildCabinetDropdownField(),
-                                const SizedBox(height: 16),
-                              ],
                               _buildPhotoField(),
                               const SizedBox(height: 32),
                               MouseRegion(
@@ -444,11 +417,13 @@ class _RegisterPageState extends State<RegisterPage>
     bool obscureText = false,
     Widget? suffixIcon,
     String? Function(String?)? validator,
+    void Function(String)? onFieldSubmitted,
   }) {
     return TextFormField(
       controller: controller,
       obscureText: obscureText,
       validator: validator,
+      onFieldSubmitted: onFieldSubmitted,
       style: const TextStyle(fontSize: 16),
       decoration: InputDecoration(
         labelText: labelText,
@@ -473,52 +448,6 @@ class _RegisterPageState extends State<RegisterPage>
         focusedErrorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: const BorderSide(color: Colors.red, width: 2),
-        ),
-        filled: true,
-        fillColor: Colors.grey.shade50,
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-      ),
-    );
-  }
-
-  Widget _buildUserTypeField() {
-    return DropdownButtonFormField<String>(
-      value: selectedUserType,
-      onChanged: (String? newValue) {
-        setState(() {
-          selectedUserType = newValue;
-          // Clear cabinet selection if user switches to client
-          if (newValue == 'client') {
-            selectedCabinetId = null;
-          }
-        });
-      },
-      items: const [
-        DropdownMenuItem<String>(
-          value: 'doctor',
-          child: Text('Doctor / Lucrător Cabinet Veterinar'),
-        ),
-        DropdownMenuItem<String>(
-          value: 'client',
-          child: Text('Client / Proprietar Animal'),
-        ),
-      ],
-      decoration: InputDecoration(
-        labelText: 'Tipul utilizatorului *',
-        prefixIcon:
-            Icon(Icons.person_pin_outlined, color: const Color(0xFF00796B)),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.grey.shade300),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.grey.shade300),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Color(0xFF00796B), width: 2),
         ),
         filled: true,
         fillColor: Colors.grey.shade50,

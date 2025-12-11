@@ -205,7 +205,7 @@ class _MainPageState extends State<MainPage>
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  userDetails['username'] ?? '',
+                  '${userDetails['firstName'] ?? ''} ${userDetails['lastName'] ?? ''}',
                   style: const TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
@@ -222,7 +222,7 @@ class _MainPageState extends State<MainPage>
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
-                    userDetails['email'] ?? '',
+                    userDetails['Cabinet']?['name'] ?? 'Fără cabinet',
                     style: TextStyle(
                       fontSize: 13,
                       color: Colors.white.withOpacity(0.95),
@@ -268,7 +268,7 @@ class _MainPageState extends State<MainPage>
           ),
           const SizedBox(height: 12),
           Text(
-            userDetails['username'] ?? '',
+            '${userDetails['firstName'] ?? ''} ${userDetails['lastName'] ?? ''}',
             style: const TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
@@ -277,7 +277,7 @@ class _MainPageState extends State<MainPage>
           ),
           const SizedBox(height: 4),
           Text(
-            userDetails['email'] ?? '',
+            userDetails['Cabinet']?['name'] ?? 'Fără cabinet',
             style: TextStyle(
               fontSize: 14,
               color: Colors.white.withOpacity(0.9),
@@ -324,11 +324,11 @@ class _MainPageState extends State<MainPage>
               _buildModernNavCard('Import', Icons.upload_file_rounded,
                   const Color(0xFF1976D2), ImportPage()),
               _buildModernNavCard('Calendar', Icons.calendar_today_rounded,
-                  const Color(0xFF7B1FA2), CalendarPage()),
+                  const Color(0xFF7B1FA2), CalendarPage(user: userDetails)),
               _buildModernNavCard('Inventar', Icons.inventory_2_rounded,
-                  const Color(0xFFE64A19), InventoryPage()),
+                  const Color(0xFFE64A19), InventoryPage(user: userDetails)),
               _buildModernNavCard('Programări', Icons.schedule_rounded,
-                  const Color(0xFF0097A7), SchedulingPage()),
+                  const Color(0xFF0097A7), SchedulingPage(user: userDetails)),
               _buildModernNavCard('Registru', Icons.menu_book_rounded,
                   const Color(0xFF689F38), RegistryPage()),
             ],
@@ -416,13 +416,18 @@ class _MainPageState extends State<MainPage>
           icon: Icons.edit_rounded,
           label: 'Editează Profilul',
           color: const Color(0xFF00796B),
-          onPressed: () {
-            Navigator.push(
+          onPressed: () async {
+            final updatedUser = await Navigator.push(
               context,
               MaterialPageRoute(
                   builder: (context) =>
                       EditProfilePage(userDetails: userDetails)),
             );
+            
+            // Refresh user details if profile was updated
+            if (updatedUser != null) {
+              await _fetchUserDetails();
+            }
           },
         ),
         const SizedBox(height: 12),

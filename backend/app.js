@@ -11,6 +11,8 @@ const userRoutes = require('./routes/user');
 const clientRoutes = require('./routes/client');
 const petRoutes = require('./routes/pet');
 const visitRoutes = require('./routes/visit');
+const appointmentRoutes = require('./routes/appointment');
+const productRoutes = require('./routes/product');
 
 require('dotenv').config();
 
@@ -44,6 +46,8 @@ app.use('/users', userRoutes);
 app.use('/clients', clientRoutes);
 app.use('/pets', petRoutes);
 app.use('/visits', visitRoutes);
+app.use('/appointments', appointmentRoutes);
+app.use('/products', productRoutes);
 
 app.get('/', (req, res) => {
     res.send('Hello World!');

@@ -1,0 +1,26 @@
+-- Create Appointments table
+CREATE TABLE IF NOT EXISTS `Appointments` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `title` VARCHAR(255) NOT NULL,
+  `startTime` DATETIME NOT NULL,
+  `endTime` DATETIME NOT NULL,
+  `type` ENUM('appointment', 'blocked') NOT NULL DEFAULT 'appointment',
+  `status` ENUM('scheduled', 'confirmed', 'completed', 'cancelled') NOT NULL DEFAULT 'scheduled',
+  `clientName` VARCHAR(255) NULL,
+  `clientPhone` VARCHAR(255) NULL,
+  `clientEmail` VARCHAR(255) NULL,
+  `reason` TEXT NULL,
+  `notes` TEXT NULL,
+  `cabinetId` INT NOT NULL,
+  `createdBy` INT NULL,
+  `updatedBy` INT NULL,
+  `createdAt` DATETIME NOT NULL,
+  `updatedAt` DATETIME NOT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `cabinetId` (`cabinetId`),
+  INDEX `createdBy` (`createdBy`),
+  INDEX `updatedBy` (`updatedBy`),
+  CONSTRAINT `appointments_ibfk_1` FOREIGN KEY (`cabinetId`) REFERENCES `Cabinets` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `appointments_ibfk_2` FOREIGN KEY (`createdBy`) REFERENCES `Users` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
+  CONSTRAINT `appointments_ibfk_3` FOREIGN KEY (`updatedBy`) REFERENCES `Users` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

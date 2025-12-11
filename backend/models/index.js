@@ -15,6 +15,8 @@ db.Cabinet = require('./Cabinet')(sequelize, DataTypes);
 db.Client = require('./Client')(sequelize, DataTypes);
 db.Pet = require('./Pet')(sequelize, DataTypes);
 db.Visit = require('./Visit')(sequelize, DataTypes);
+db.Appointment = require('./Appointment')(sequelize, DataTypes);
+db.Product = require('./Product')(sequelize, DataTypes);
 
 // Define associations
 if (db.User.associate) db.User.associate(db);
@@ -22,6 +24,8 @@ if (db.Cabinet.associate) db.Cabinet.associate(db);
 if (db.Client.associate) db.Client.associate(db);
 if (db.Pet.associate) db.Pet.associate(db);
 if (db.Visit.associate) db.Visit.associate(db);
+if (db.Appointment.associate) db.Appointment.associate(db);
+if (db.Product.associate) db.Product.associate(db);
 
 // Synchronize database schema
 sequelize.sync({ alter: true })

@@ -305,8 +305,19 @@ class _AdminPanelPageState extends State<AdminPanelPage> {
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.teal.shade600,
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 24),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
             ),
-            child: Text(animal == null ? 'Adaugă' : 'Salvează'),
+            child: Text(
+              animal == null ? 'Adaugă' : 'Salvează',
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
           ),
         ],
       ),
