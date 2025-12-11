@@ -1,0 +1,13 @@
+E:/desktop folders/vet-app CS/vetapp/frontend/build/windows/x64/CMakeFiles/INSTALL.dir
+E:/desktop folders/vet-app CS/vetapp/frontend/build/windows/x64/CMakeFiles/ALL_BUILD.dir
+E:/desktop folders/vet-app CS/vetapp/frontend/build/windows/x64/CMakeFiles/ZERO_CHECK.dir
+E:/desktop folders/vet-app CS/vetapp/frontend/build/windows/x64/flutter/CMakeFiles/flutter_wrapper_plugin.dir
+E:/desktop folders/vet-app CS/vetapp/frontend/build/windows/x64/flutter/CMakeFiles/flutter_wrapper_app.dir
+E:/desktop folders/vet-app CS/vetapp/frontend/build/windows/x64/flutter/CMakeFiles/flutter_assemble.dir
+E:/desktop folders/vet-app CS/vetapp/frontend/build/windows/x64/flutter/CMakeFiles/INSTALL.dir
+E:/desktop folders/vet-app CS/vetapp/frontend/build/windows/x64/runner/CMakeFiles/flutter_application_1.dir
+E:/desktop folders/vet-app CS/vetapp/frontend/build/windows/x64/runner/CMakeFiles/INSTALL.dir
+E:/desktop folders/vet-app CS/vetapp/frontend/build/windows/x64/runner/CMakeFiles/ALL_BUILD.dir
+E:/desktop folders/vet-app CS/vetapp/frontend/build/windows/x64/plugins/file_selector_windows/CMakeFiles/file_selector_windows_plugin.dir
+E:/desktop folders/vet-app CS/vetapp/frontend/build/windows/x64/plugins/file_selector_windows/CMakeFiles/INSTALL.dir
+E:/desktop folders/vet-app CS/vetapp/frontend/build/windows/x64/plugins/file_selector_windows/CMakeFiles/ALL_BUILD.dir

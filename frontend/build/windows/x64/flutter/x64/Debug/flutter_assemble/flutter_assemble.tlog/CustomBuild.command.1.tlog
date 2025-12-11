@@ -1,0 +1,28 @@
+^E:\DESKTOP FOLDERS\VET-APP CS\VETAPP\FRONTEND\BUILD\WINDOWS\X64\CMAKEFILES\384ED7A52A5D428B0B846016BF7A3111\FLUTTER_WINDOWS.DLL.RULE
+setlocal
+"C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -E env "FLUTTER_ROOT=E:\desktop folders\vet-app\flutter" "PROJECT_DIR=E:\desktop folders\vet-app CS\vetapp\frontend" "FLUTTER_ROOT=E:\desktop folders\vet-app\flutter" "FLUTTER_EPHEMERAL_DIR=E:\desktop folders\vet-app CS\vetapp\frontend\windows\flutter\ephemeral" "PROJECT_DIR=E:\desktop folders\vet-app CS\vetapp\frontend" "FLUTTER_TARGET=E:\desktop folders\vet-app CS\vetapp\frontend\lib\main.dart" DART_OBFUSCATION=false TRACK_WIDGET_CREATION=true TREE_SHAKE_ICONS=false "PACKAGE_CONFIG=E:\desktop folders\vet-app CS\vetapp\frontend\.dart_tool\package_config.json" "E:/desktop folders/vet-app/flutter/packages/flutter_tools/bin/tool_backend.bat" windows-x64 Debug
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^E:\DESKTOP FOLDERS\VET-APP CS\VETAPP\FRONTEND\BUILD\WINDOWS\X64\CMAKEFILES\F073A033852CC2F216B3D4DD7368F089\FLUTTER_ASSEMBLE.RULE
+setlocal
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^E:\DESKTOP FOLDERS\VET-APP CS\VETAPP\FRONTEND\WINDOWS\FLUTTER\CMAKELISTS.TXT
+setlocal
+"C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" "-SE:/desktop folders/vet-app CS/vetapp/frontend/windows" "-BE:/desktop folders/vet-app CS/vetapp/frontend/build/windows/x64" --check-stamp-file "E:/desktop folders/vet-app CS/vetapp/frontend/build/windows/x64/flutter/CMakeFiles/generate.stamp"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

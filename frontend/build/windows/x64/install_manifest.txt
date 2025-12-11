@@ -1,0 +1,13 @@
+E:/desktop folders/vet-app CS/vetapp/frontend/build/windows/x64/runner/Debug/data/icudtl.dat
+E:/desktop folders/vet-app CS/vetapp/frontend/build/windows/x64/runner/Debug/flutter_windows.dll
+E:/desktop folders/vet-app CS/vetapp/frontend/build/windows/x64/runner/Debug/file_selector_windows_plugin.dll
+E:/desktop folders/vet-app CS/vetapp/frontend/build/windows/x64/runner/Debug/data/flutter_assets/AssetManifest.bin
+E:/desktop folders/vet-app CS/vetapp/frontend/build/windows/x64/runner/Debug/data/flutter_assets/AssetManifest.bin.json
+E:/desktop folders/vet-app CS/vetapp/frontend/build/windows/x64/runner/Debug/data/flutter_assets/AssetManifest.json
+E:/desktop folders/vet-app CS/vetapp/frontend/build/windows/x64/runner/Debug/data/flutter_assets/FontManifest.json
+E:/desktop folders/vet-app CS/vetapp/frontend/build/windows/x64/runner/Debug/data/flutter_assets/fonts/MaterialIcons-Regular.otf
+E:/desktop folders/vet-app CS/vetapp/frontend/build/windows/x64/runner/Debug/data/flutter_assets/kernel_blob.bin
+E:/desktop folders/vet-app CS/vetapp/frontend/build/windows/x64/runner/Debug/data/flutter_assets/NOTICES
+E:/desktop folders/vet-app CS/vetapp/frontend/build/windows/x64/runner/Debug/data/flutter_assets/NOTICES.Z
+E:/desktop folders/vet-app CS/vetapp/frontend/build/windows/x64/runner/Debug/data/flutter_assets/packages/cupertino_icons/assets/CupertinoIcons.ttf
+E:/desktop folders/vet-app CS/vetapp/frontend/build/windows/x64/runner/Debug/data/flutter_assets/shaders/ink_sparkle.frag
