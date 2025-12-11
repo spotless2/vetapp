@@ -10,7 +10,6 @@ android/
 macos/
 linux/
 windows/
-web/
 test/
 .git
 .gitignore
